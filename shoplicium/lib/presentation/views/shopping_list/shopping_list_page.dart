@@ -9,6 +9,7 @@ import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
 import 'widgets/create_new_list_dialog.dart';
 import 'widgets/latest_shopping_list_card.dart';
+import 'widgets/previous_shopping_list_item.dart';
 
 class ShoppingListPage extends StatefulWidget {
   const ShoppingListPage({super.key});
@@ -18,6 +19,8 @@ class ShoppingListPage extends StatefulWidget {
 }
 
 class _ShoppingListPageState extends State<ShoppingListPage> {
+  final _scrollController = ScrollController();
+
   @override
   void initState() {
     GetIt.instance<ShoppingListBloc>().retrieveShoppingLists();
@@ -45,14 +48,18 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
               var listData = snapshot.data;
 
               if (listData == null || listData.isEmpty) {
-                return ShoppingListErrorWidget(
-                  caption: 'You don’t have any\nshopping lists',
-                  actionButton: _createNewListButton(context),
+                return Center(
+                  child: ShoppingListErrorWidget(
+                    caption: 'You don’t have any\nshopping lists',
+                    actionButton: _createNewListButton(context),
+                  ),
                 );
               } else {
                 return Padding(
                   padding: const EdgeInsets.only(top: 20, left: 25, right: 25),
                   child: CustomScrollView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    controller: _scrollController,
                     slivers: [
                       const SliverToBoxAdapter(
                         child: Text(
@@ -67,9 +74,12 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                         ),
                       ),
                       const SliverToBoxAdapter(
-                        child: Text(
-                          'Previous lists',
-                          style: TextStyles.sectionTitleTextStyle,
+                        child: Padding(
+                          padding: EdgeInsets.only(bottom: 5),
+                          child: Text(
+                            'Previous lists',
+                            style: TextStyles.sectionTitleTextStyle,
+                          ),
                         ),
                       ),
                       listData.length == 1
@@ -82,9 +92,21 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                                 ),
                               ),
                             )
-                          : const SliverFillRemaining(
-                              child: ShoppingListErrorWidget(
-                                caption: 'Previous list is under development',
+                          : SliverFillRemaining(
+                              child: ListView.separated(
+                                padding: const EdgeInsets.only(bottom: 70),
+                                physics: const BouncingScrollPhysics(),
+                                controller: _scrollController,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  if (index == 0) {
+                                    return const SizedBox.shrink();
+                                  } else {
+                                    return PreviousShoppingListItem(data: listData[index]);
+                                  }
+                                },
+                                separatorBuilder: (context, index) => const SizedBox(height: 10),
+                                itemCount: listData.length,
                               ),
                             ),
                     ],
