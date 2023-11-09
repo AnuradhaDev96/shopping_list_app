@@ -42,7 +42,7 @@ class ShoppingListPage extends StatelessWidget {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 60),
-                  child: _ShoppingListErrorWidget(
+                  child: ShoppingListErrorWidget(
                     caption: 'No more shopping lists !',
                     actionButton: _createNewListButton,
                   ),
@@ -58,8 +58,8 @@ class ShoppingListPage extends StatelessWidget {
   Widget get _createNewListButton => GestureDetector(child: const PrimaryButtonSkin());
 }
 
-class _ShoppingListErrorWidget extends StatelessWidget {
-  const _ShoppingListErrorWidget({super.key, required this.caption, this.actionButton});
+class ShoppingListErrorWidget extends StatelessWidget {
+  const ShoppingListErrorWidget({super.key, required this.caption, this.actionButton});
 
   final String caption;
   final Widget? actionButton;
