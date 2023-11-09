@@ -20,7 +20,6 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
 
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  CalendarFormat _calendarFormat = CalendarFormat.month;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +58,7 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
                     ),
                   ),
                   TextFormField(
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     controller: _titleController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -94,10 +94,15 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
                     },
                     decoration: InputDecorations.outlinedInputDecoration(hintText: 'Tap to select date'),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 120),
-                    child: PrimaryButtonSkin(
-                      title: 'Save & add items',
+                  Padding(
+                    padding: const EdgeInsets.only(top: 120),
+                    child: GestureDetector(
+                      onTap: () {
+                        saveListAndAddItems();
+                      },
+                      child: const PrimaryButtonSkin(
+                        title: 'Save & add items',
+                      ),
                     ),
                   )
                 ],
@@ -118,7 +123,6 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
             children: [
               TableCalendar(
                 focusedDay: _focusedDay,
-                calendarFormat: _calendarFormat,
                 firstDay: DateTime.now(),
                 lastDay: DateTime.now().add(
                   const Duration(days: 365 * 10),
@@ -144,5 +148,11 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
         );
       },
     );
+  }
+
+  void saveListAndAddItems() {
+    if (_formKey.currentState!.validate()) {
+
+    }
   }
 }
