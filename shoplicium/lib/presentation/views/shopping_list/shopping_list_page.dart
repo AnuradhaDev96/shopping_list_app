@@ -15,7 +15,7 @@ class ShoppingListPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Shopping List'),
         ),
-        floatingActionButton: _createNewListButton,
+        floatingActionButton: _createNewListButton(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
         body: Padding(
           padding: const EdgeInsets.only(top: 20, left: 25, right: 25),
@@ -44,7 +44,7 @@ class ShoppingListPage extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 60),
                   child: ShoppingListErrorWidget(
                     caption: 'No more shopping lists !',
-                    actionButton: _createNewListButton,
+                    actionButton: _createNewListButton(context),
                   ),
                 ),
               ),
@@ -55,7 +55,73 @@ class ShoppingListPage extends StatelessWidget {
     );
   }
 
-  Widget get _createNewListButton => GestureDetector(child: const PrimaryButtonSkin());
+  Widget _createNewListButton(BuildContext context) => GestureDetector(
+        onTap: () => showCreateNewListDialog(context),
+        child: const PrimaryButtonSkin(title: 'Create new list'),
+      );
+
+  void showCreateNewListDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          child: const Wrap(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 23),
+                      child: Text(
+                        'Create new list',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Title',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Shopping date',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 120),
+                      child: PrimaryButtonSkin(
+                        title: 'Save & add items',
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
 
 class ShoppingListErrorWidget extends StatelessWidget {
@@ -78,10 +144,11 @@ class ShoppingListErrorWidget extends StatelessWidget {
             fontSize: 18,
           ),
         ),
-        if (actionButton != null) Padding(
-          padding: const EdgeInsets.only(top: 20),
-          child: actionButton!,
-        ),
+        if (actionButton != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: actionButton!,
+          ),
       ],
     );
   }

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../../utils/constants/app_colors.dart';
 
 class PrimaryButtonSkin extends StatelessWidget {
-  const PrimaryButtonSkin({super.key});
+  const PrimaryButtonSkin({super.key, required this.title});
+  final String title;
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +23,11 @@ class PrimaryButtonSkin extends StatelessWidget {
           ),
           border: Border.all(width: 2, color: Colors.white, strokeAlign: BorderSide.strokeAlignOutside),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
-            'Create new list',
+            title,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w500,
               fontSize: 18,
