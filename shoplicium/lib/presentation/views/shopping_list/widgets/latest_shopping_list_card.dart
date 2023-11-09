@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../domain/models/shopping_list_dto.dart';
 import '../../../../utils/constants/app_colors.dart';
@@ -25,11 +26,11 @@ class LatestShoppingListCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Sunday shopping',
-              style: TextStyle(
+              data.title,
+              style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 17,
@@ -37,11 +38,11 @@ class LatestShoppingListCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 2),
-          const Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Sunday 21, Nov 2023',
-              style: TextStyle(
+              DateFormat("EEEE d, MMM y").format(data.date),
+              style: const TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.normal,
                 fontSize: 14,
