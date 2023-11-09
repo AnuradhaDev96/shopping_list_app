@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../../../../domain/models/shopping_list_dto.dart';
 import '../../../../utils/constants/app_colors.dart';
 
 class LatestShoppingListCard extends StatelessWidget {
-  const LatestShoppingListCard({super.key});
+  const LatestShoppingListCard({super.key, required this.data});
+  final ShoppingListDto data;
 
   @override
   Widget build(BuildContext context) {
