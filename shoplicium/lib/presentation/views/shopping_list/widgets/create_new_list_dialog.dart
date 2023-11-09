@@ -83,6 +83,7 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
                   ),
                   TextFormField(
                     controller: _dateController,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     readOnly: true,
                     onTap: () => showDatePickerDialog(context),
                     validator: (value) {
