@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../config/themes/text_styles.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
+import 'widgets/create_new_list_dialog.dart';
 import 'widgets/latest_shopping_list_card.dart';
 
 class ShoppingListPage extends StatelessWidget {
@@ -63,63 +64,7 @@ class ShoppingListPage extends StatelessWidget {
   void showCreateNewListDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) {
-        return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          backgroundColor: Colors.white,
-          surfaceTintColor: Colors.transparent,
-          child: const Wrap(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 23),
-                      child: Text(
-                        'Create new list',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Title',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Shopping date',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 120),
-                      child: PrimaryButtonSkin(
-                        title: 'Save & add items',
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+      builder: (dialogContext) => CreateNewListDialog(),
     );
   }
 }
