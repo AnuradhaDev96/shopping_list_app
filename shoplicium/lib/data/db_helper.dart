@@ -1,4 +1,5 @@
 abstract class DbHelper {
+  static const dbVersion = 1;
   static const dbName = 'shoplicium_database.db';
   static const shoppingListsTable = 'ShoppingLists';
   static const listItemsTable = 'ListItems';
