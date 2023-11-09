@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import 'config/themes/text_styles.dart';
-import 'data/app_database.dart';
+import 'dependecy_locator.dart';
+import 'domain/repositories/local_data_source.dart';
 import 'presentation/views/shopping_list/shopping_list_page.dart';
 import 'utils/constants/app_colors.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await AppDatabase.initDatabase();
+  DependencyLocator.locateDependencies();
+
+  await GetIt.instance<LocalDataSource>().initDatabase();
 
   runApp(const ShoppingListApp());
 }
