@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../config/themes/text_styles.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
+import 'widgets/create_new_list_dialog.dart';
 import 'widgets/latest_shopping_list_card.dart';
 
 class ShoppingListPage extends StatelessWidget {
@@ -15,20 +16,38 @@ class ShoppingListPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Shopping List'),
         ),
-        floatingActionButton: const PrimaryButtonSkin(),
+        floatingActionButton: _createNewListButton(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-        body: const Padding(
-          padding: EdgeInsets.only(top: 20, left: 25, right: 25),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 20, left: 25, right: 25),
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Text(
                   'Latest list',
                   style: TextStyles.sectionTitleTextStyle,
                 ),
               ),
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 30),
+                  child: LatestShoppingListCard(),
+                ),
+              ),
+              const SliverToBoxAdapter(
+                child: Text(
+                  'Previous lists',
+                  style: TextStyles.sectionTitleTextStyle,
+                ),
+              ),
               SliverToBoxAdapter(
-                child: LatestShoppingListCard(),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 60),
+                  child: ShoppingListErrorWidget(
+                    caption: 'No more shopping lists !',
+                    actionButton: _createNewListButton(context),
+                  ),
+                ),
               ),
             ],
           ),
@@ -36,12 +55,25 @@ class ShoppingListPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _createNewListButton(BuildContext context) => GestureDetector(
+        onTap: () => showCreateNewListDialog(context),
+        child: const PrimaryButtonSkin(title: 'Create new list'),
+      );
+
+  void showCreateNewListDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => CreateNewListDialog(),
+    );
+  }
 }
 
-class _ShoppingListErrorWidget extends StatelessWidget {
-  const _ShoppingListErrorWidget({super.key, required this.caption});
+class ShoppingListErrorWidget extends StatelessWidget {
+  const ShoppingListErrorWidget({super.key, required this.caption, this.actionButton});
 
   final String caption;
+  final Widget? actionButton;
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +89,11 @@ class _ShoppingListErrorWidget extends StatelessWidget {
             fontSize: 18,
           ),
         ),
+        if (actionButton != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: actionButton!,
+          ),
       ],
     );
   }
