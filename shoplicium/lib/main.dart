@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
 import 'config/themes/text_styles.dart';
+import 'data/app_database.dart';
 import 'presentation/views/shopping_list/shopping_list_page.dart';
 import 'utils/constants/app_colors.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await AppDatabase.initDatabase();
+
   runApp(const ShoppingListApp());
 }
 
