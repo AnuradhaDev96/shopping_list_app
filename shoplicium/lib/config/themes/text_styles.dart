@@ -6,6 +6,7 @@ abstract class TextStyles {
   static const defaultFontFamily = 'Kumbh_Sans';
 
   static const appBarTitleTextStyle = TextStyle(
+    fontFamily: defaultFontFamily,
     fontSize: 24,
     fontWeight: FontWeight.bold,
     color: Colors.white,
