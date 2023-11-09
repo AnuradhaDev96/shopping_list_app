@@ -24,7 +24,7 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
     final records = await db.query(_tableName);
 
     var list = records.map((e) => ShoppingListDto.fromMap(e)).toList();
-    list.sort((a, b) => a.createdOn.compareTo(b.createdOn));
+    list.sort((a, b) => b.createdOn.compareTo(a.createdOn));
 
     return list;
   }
