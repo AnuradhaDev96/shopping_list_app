@@ -17,4 +17,15 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
 
     return result == 0 ?  false : true;
   }
+
+  @override
+  Future<List<ShoppingListDto>> getShoppingLists() async {
+    final db = await _dataSource.getDatabase();
+    final records = await db.query(_tableName);
+
+    var list = records.map((e) => ShoppingListDto.fromMap(e)).toList();
+    list.sort((a, b) => a.createdOn.compareTo(b.createdOn));
+
+    return list;
+  }
 }

@@ -6,9 +6,14 @@ import '../../widgets/scaffold_decoration.dart';
 import 'widgets/create_new_list_dialog.dart';
 import 'widgets/latest_shopping_list_card.dart';
 
-class ShoppingListPage extends StatelessWidget {
+class ShoppingListPage extends StatefulWidget {
   const ShoppingListPage({super.key});
 
+  @override
+  State<ShoppingListPage> createState() => _ShoppingListPageState();
+}
+
+class _ShoppingListPageState extends State<ShoppingListPage> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldDecoration(
