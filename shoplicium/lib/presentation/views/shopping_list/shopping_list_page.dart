@@ -15,20 +15,38 @@ class ShoppingListPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Shopping List'),
         ),
-        floatingActionButton: const PrimaryButtonSkin(),
+        floatingActionButton: _createNewListButton,
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-        body: const Padding(
-          padding: EdgeInsets.only(top: 20, left: 25, right: 25),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 20, left: 25, right: 25),
           child: CustomScrollView(
             slivers: [
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Text(
                   'Latest list',
                   style: TextStyles.sectionTitleTextStyle,
                 ),
               ),
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 30),
+                  child: LatestShoppingListCard(),
+                ),
+              ),
+              const SliverToBoxAdapter(
+                child: Text(
+                  'Previous lists',
+                  style: TextStyles.sectionTitleTextStyle,
+                ),
+              ),
               SliverToBoxAdapter(
-                child: LatestShoppingListCard(),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 60),
+                  child: _ShoppingListErrorWidget(
+                    caption: 'No more shopping lists !',
+                    actionButton: _createNewListButton,
+                  ),
+                ),
               ),
             ],
           ),
@@ -36,12 +54,15 @@ class ShoppingListPage extends StatelessWidget {
       ),
     );
   }
+
+  Widget get _createNewListButton => GestureDetector(child: const PrimaryButtonSkin());
 }
 
 class _ShoppingListErrorWidget extends StatelessWidget {
-  const _ShoppingListErrorWidget({super.key, required this.caption});
+  const _ShoppingListErrorWidget({super.key, required this.caption, this.actionButton});
 
   final String caption;
+  final Widget? actionButton;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +77,10 @@ class _ShoppingListErrorWidget extends StatelessWidget {
             fontWeight: FontWeight.w500,
             fontSize: 18,
           ),
+        ),
+        if (actionButton != null) Padding(
+          padding: const EdgeInsets.only(top: 20),
+          child: actionButton!,
         ),
       ],
     );
