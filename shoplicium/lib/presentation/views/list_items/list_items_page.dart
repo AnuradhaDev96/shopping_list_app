@@ -18,9 +18,10 @@ import 'widgets/update_list_item_dialog.dart';
 import 'widgets/update_shopping_list_dialog.dart';
 
 class ListItemsPage extends StatefulWidget {
-  const ListItemsPage({super.key, required this.selectedList});
+  const ListItemsPage({super.key, required this.selectedList, this.isLatestList = false});
 
   final ShoppingListDto selectedList;
+  final bool isLatestList;
 
   @override
   State<ListItemsPage> createState() => _ListItemsPageState();
@@ -200,7 +201,10 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                     showDialog(
                                       context: context,
                                       builder: (dialogContext) {
-                                        return UpdateListItemDialog(selectedItem: listItemData);
+                                        return UpdateListItemDialog(
+                                          selectedItem: listItemData,
+                                          isLatestList: widget.isLatestList,
+                                        );
                                       },
                                     );
                                   },

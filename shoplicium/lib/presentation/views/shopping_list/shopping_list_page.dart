@@ -78,6 +78,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                               MaterialPageRoute(
                                 builder: (context) => ListItemsPage(
                                   selectedList: listData.first,
+                                  isLatestList: true,
                                 ),
                               ),
                             ),

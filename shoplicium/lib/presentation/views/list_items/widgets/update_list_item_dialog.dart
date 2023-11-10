@@ -17,9 +17,10 @@ import '../../../widgets/primary_button_skin.dart';
 import '../../../widgets/secondary_button_skin.dart';
 
 class UpdateListItemDialog extends StatefulWidget {
-  const UpdateListItemDialog({super.key, required this.selectedItem});
+  const UpdateListItemDialog({super.key, required this.selectedItem, required this.isLatestList});
 
   final ListItemDto selectedItem;
+  final bool isLatestList;
 
   @override
   State<UpdateListItemDialog> createState() => _UpdateListItemDialogState();
@@ -212,25 +213,54 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
                                 }
                               },
                               child: BlocBuilder<UpdateListItemCubit, DataPayloadState>(
-                                  bloc: _updateCubit,
-                                  builder: (context, state) {
-                                    if (state is RequestingState) {
-                                      return const CupertinoActivityIndicator();
-                                    }
+                                bloc: _updateCubit,
+                                builder: (context, state) {
+                                  if (state is RequestingState) {
+                                    return const CupertinoActivityIndicator();
+                                  }
 
-                                    return GestureDetector(
-                                      onTap: () {
-                                        _updateListItem();
-                                      },
-                                      child: const PrimaryButtonSkin(
-                                        title: 'Update',
-                                        internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
-                                      ),
-                                    );
-                                  }),
+                                  return GestureDetector(
+                                    onTap: () {
+                                      _updateListItem();
+                                    },
+                                    child: const PrimaryButtonSkin(
+                                      title: 'Update',
+                                      internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
                           ),
-                        )
+                        ),
+                        if (!widget.isLatestList)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 11),
+                            child: InkWell(
+                              onTap: () {},
+                              // behavior: HitTestBehavior.opaque,
+                              borderRadius: BorderRadius.circular(5),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      'Move to latest list',
+                                      style: TextStyle(
+                                        color: AppColors.darkBlue1,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 9),
+                                    SvgPicture.asset(Assets.moveToListIcon, width: 25, height: 25),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                   ),
