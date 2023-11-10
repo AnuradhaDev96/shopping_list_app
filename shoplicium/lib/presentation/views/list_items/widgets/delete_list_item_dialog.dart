@@ -59,7 +59,7 @@ class DeleteListItemDialog extends StatelessWidget {
                         Navigator.popUntil(context, (route) {
                           return pagesToPop-- == 0;
                         });
-                        MessageUtils.showSnackBarOverBarrier(context, 'Shopping list\ndeleted successfully');
+                        MessageUtils.showSnackBarOverBarrier(context, 'Shopping list deleted successfully');
                       }
                     },
                     child: BlocBuilder<DeleteShoppingListCubit, DataPayloadState>(
