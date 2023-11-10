@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get_it/get_it.dart';
 
+import '../../../config/themes/text_styles.dart';
 import '../../../domain/models/list_item_dto.dart';
 import '../../../domain/models/shopping_list_dto.dart';
 import '../../../utils/constants/assets.dart';
@@ -90,10 +91,10 @@ class _ListItemsPageState extends State<ListItemsPage> {
                       controller: _scrollController,
                       slivers: [
                         SliverToBoxAdapter(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ListView.separated(
+                          child: SizedBox(
+                            height: 55,
+                            child: Center(
+                              child: ListView.separated(
                                 physics: const NeverScrollableScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
@@ -101,34 +102,71 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                   var filterItem = ListItemFilterEnum.values[index];
                                   bool isSelected = filterItem == _selectedFilter;
 
-                                  return Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        filterItem.text,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.white,
-                                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w300,
-                                        ),
-                                      ),
-                                      if (isSelected)
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 5),
-                                          child: Container(
-                                            width: 30,
-                                            height: 4,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(4),
-                                              color: Colors.white,
-                                            ),
+                                  return GestureDetector(
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedFilter = filterItem;
+                                      });
+                                    },
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          filterItem.text,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            color: Colors.white,
+                                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w300,
                                           ),
                                         ),
-                                    ],
+                                        if (isSelected)
+                                          Transform.translate(
+                                            offset: const Offset(0, 5),
+                                            child: Container(
+                                              width: 30,
+                                              height: 4,
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(4),
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   );
                                 },
                                 separatorBuilder: (context, index) => const SizedBox(width: 25),
                                 itemCount: ListItemFilterEnum.values.length,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Items',
+                                    style: TextStyles.sectionTitleTextStyle,
+                                  ),
+                                  const SizedBox(width: 7),
+                                  SvgPicture.asset(
+                                    Assets.helpIcon,
+                                    width: 26,
+                                    height: 26,
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                _selectedFilter.counterText,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
                               ),
                             ],
                           ),
@@ -192,12 +230,13 @@ class _ListItemsPageState extends State<ListItemsPage> {
 
 enum ListItemFilterEnum {
   /// [all] does not have a status value in table
-  all(statusValue: 0, text: "All items"),
-  remaining(statusValue: 1, text: "Remaining"),
-  notInShop(statusValue: 3, text: "Not in shop");
+  all(statusValue: 0, text: "All items", counterText: 'total'),
+  remaining(statusValue: 1, text: "Remaining", counterText: 'remaining'),
+  notInShop(statusValue: 3, text: "Not in shop", counterText: 'not found');
 
   final int statusValue;
   final String text;
+  final String counterText;
 
-  const ListItemFilterEnum({required this.statusValue, required this.text});
+  const ListItemFilterEnum({required this.statusValue, required this.text, required this.counterText});
 }

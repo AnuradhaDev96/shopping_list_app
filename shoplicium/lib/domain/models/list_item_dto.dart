@@ -20,6 +20,15 @@ class ListItemDto {
   ///type: TEXT
   final String listId;
 
+  ListItemDto({
+    required this.itemId,
+    required this.title,
+    required this.amount,
+    required this.UOM,
+    required this.status,
+    required this.listId,
+  });
+
   ListItemDto.fromMap(Map<String, dynamic> map)
       : itemId = map['itemId'],
         title = map['title'],

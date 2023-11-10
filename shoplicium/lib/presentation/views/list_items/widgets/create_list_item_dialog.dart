@@ -1,9 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../config/themes/input_decorations.dart';
 import '../../../../domain/enums/unit_of_measure_enum.dart';
 import '../../../../utils/constants/app_colors.dart';
+import '../../../../utils/resources/message_utils.dart';
+import '../../../cubits/shopping_items/create_list_item_cubit.dart';
+import '../../../states/data_payload_state.dart';
 import '../../../widgets/primary_button_skin.dart';
 
 class CreateListItemDialog extends StatefulWidget {
@@ -16,6 +21,8 @@ class CreateListItemDialog extends StatefulWidget {
 }
 
 class _CreateListItemDialogState extends State<CreateListItemDialog> {
+  final _createListItemCubit = CreateListItemCubit();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final _titleController = TextEditingController();
@@ -135,12 +142,9 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
                             .toList(),
                         dropdownColor: AppColors.blue1,
                         decoration: InputDecoration(
-                          filled: true,
-                          fillColor: AppColors.blue1,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8)
-                          )
-                        ),
+                            filled: true,
+                            fillColor: AppColors.blue1,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
                         borderRadius: BorderRadius.circular(8),
                         style: const TextStyle(
                           color: Colors.white,
@@ -158,13 +162,36 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 50),
-                    child: GestureDetector(
-                      onTap: () {
-                        _saveItemToShoppingList();
-                      },
-                      child: const PrimaryButtonSkin(
-                        title: 'Save',
-                        internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                    child: BlocProvider<CreateListItemCubit>(
+                      create: (context) => _createListItemCubit,
+                      child: BlocListener<CreateListItemCubit, DataPayloadState>(
+                        bloc: _createListItemCubit,
+                        listener: (context, state) {
+                          if (state is ErrorState) {
+                            MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
+                          } else if (state is SuccessState) {
+                            Navigator.pop(context);
+                            MessageUtils.showSnackBarOverBarrier(context, 'Item saved successfully');
+                          }
+                        },
+                        child: BlocBuilder<CreateListItemCubit, DataPayloadState>(
+                          bloc: _createListItemCubit,
+                          builder: (context, state) {
+                            if (state is RequestingState) {
+                              return const CupertinoActivityIndicator();
+                            }
+
+                            return GestureDetector(
+                              onTap: () {
+                                _saveItemToShoppingList();
+                              },
+                              child: const PrimaryButtonSkin(
+                                title: 'Save',
+                                internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                              ),
+                            );
+                          }
+                        ),
                       ),
                     ),
                   )
@@ -179,7 +206,12 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
 
   void _saveItemToShoppingList() {
     if (_formKey.currentState!.validate()) {
-      // _createNewListCubit.createShoppingList(_titleController.text, _selectedDay);
+      _createListItemCubit.createListItem(
+        listId: widget.listId,
+        title: _titleController.text,
+        amount: int.tryParse(_amountController.text) ?? 0,
+        unitOfMeasure: _selectedUOM,
+      );
     }
   }
 }
