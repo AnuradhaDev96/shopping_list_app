@@ -139,19 +139,22 @@ class _ListItemsPageState extends State<ListItemsPage> {
     );
   }
 
-  Widget _bottomFloatingBar(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _addNewItemButton(context),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              SvgPicture.asset(Assets.editIcon, width: 37, height: 37),
-              SvgPicture.asset(Assets.deleteIconWhite, width: 37, height: 37),
-            ],
-          ),
-        ],
-      );
+  Widget _bottomFloatingBar(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(left: 27, right: 20),
+    child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _addNewItemButton(context),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SvgPicture.asset(Assets.editIcon, width: 37, height: 37),
+                SvgPicture.asset(Assets.deleteIconWhite, width: 37, height: 37),
+              ],
+            ),
+          ],
+        ),
+  );
 
   Widget _addNewItemButton(BuildContext context) {
     return GestureDetector(
