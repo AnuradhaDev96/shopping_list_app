@@ -162,7 +162,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   void showCreateNewListDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => CreateNewListDialog(),
+      builder: (dialogContext) => const CreateNewListDialog(),
     );
   }
 }

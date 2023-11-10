@@ -11,7 +11,7 @@ import '../../../states/data_payload_state.dart';
 import '../../../widgets/primary_button_skin.dart';
 
 class CreateNewListDialog extends StatefulWidget {
-  CreateNewListDialog({super.key});
+  const CreateNewListDialog({super.key});
 
   @override
   State<CreateNewListDialog> createState() => _CreateNewListDialogState();

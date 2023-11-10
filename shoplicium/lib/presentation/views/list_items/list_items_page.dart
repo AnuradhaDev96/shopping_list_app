@@ -10,6 +10,7 @@ import '../../cubits/shopping_list_bloc.dart';
 import '../../widgets/list_error_widget.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
+import 'widgets/create_list_item_dialog.dart';
 
 class ListItemsPage extends StatefulWidget {
   const ListItemsPage({super.key, required this.selectedList});
@@ -176,8 +177,15 @@ class _ListItemsPageState extends State<ListItemsPage> {
 
   Widget _addNewItemButton(BuildContext context) {
     return GestureDetector(
-      // onTap: () => showCreateNewListDialog(context),
+      onTap: () => _showCreateListItemDialog(context),
       child: const PrimaryButtonSkin(title: 'Add new item'),
+    );
+  }
+
+  void _showCreateListItemDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => CreateListItemDialog(listId: widget.selectedList.listId),
     );
   }
 }
