@@ -42,6 +42,12 @@ class _ListItemsPageState extends State<ListItemsPage> {
               ),
             ),
           ),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 15),
+              child: SvgPicture.asset(Assets.showBagIcon, width: 41, height: 45),
+            ),
+          ],
         ),
         floatingActionButton: _bottomFloatingBar(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -160,6 +166,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 SvgPicture.asset(Assets.editIcon, width: 37, height: 37),
+                const SizedBox(width: 10),
                 SvgPicture.asset(Assets.deleteIconWhite, width: 37, height: 37),
               ],
             ),
