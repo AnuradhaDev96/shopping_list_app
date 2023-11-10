@@ -12,6 +12,7 @@ import '../../widgets/list_error_widget.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
 import 'widgets/create_list_item_dialog.dart';
+import 'widgets/delete_list_item_dialog.dart';
 import 'widgets/list_item_card.dart';
 
 class ListItemsPage extends StatefulWidget {
@@ -223,7 +224,18 @@ class _ListItemsPageState extends State<ListItemsPage> {
               children: [
                 SvgPicture.asset(Assets.editIcon, width: 37, height: 37),
                 const SizedBox(width: 10),
-                SvgPicture.asset(Assets.deleteIconWhite, width: 37, height: 37),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) {
+                        return DeleteListItemDialog(listId: widget.selectedList.listId);
+                      },
+                    );
+                  },
+                  child: SvgPicture.asset(Assets.deleteIconWhite, width: 37, height: 37),
+                ),
               ],
             ),
           ],
