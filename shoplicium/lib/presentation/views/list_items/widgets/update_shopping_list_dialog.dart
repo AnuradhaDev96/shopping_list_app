@@ -55,7 +55,7 @@ class _UpdateShoppingListDialogState extends State<UpdateShoppingListDialog> {
                   const Padding(
                     padding: EdgeInsets.only(bottom: 23),
                     child: Text(
-                      'Create new list',
+                      'Edit shopping list',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
