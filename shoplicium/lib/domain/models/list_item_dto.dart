@@ -1,3 +1,4 @@
+import '../enums/list_item_status_enum.dart';
 import '../enums/unit_of_measure_enum.dart';
 
 class ListItemDto {
@@ -18,6 +19,15 @@ class ListItemDto {
 
   ///type: TEXT
   final String listId;
+
+  ListItemDto({
+    required this.itemId,
+    required this.title,
+    required this.amount,
+    required this.UOM,
+    required this.status,
+    required this.listId,
+  });
 
   ListItemDto.fromMap(Map<String, dynamic> map)
       : itemId = map['itemId'],

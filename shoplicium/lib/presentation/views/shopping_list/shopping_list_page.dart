@@ -5,8 +5,10 @@ import 'package:get_it/get_it.dart';
 import '../../../config/themes/text_styles.dart';
 import '../../../domain/models/shopping_list_dto.dart';
 import '../../cubits/shopping_list_bloc.dart';
+import '../../widgets/list_error_widget.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
+import '../list_items/list_items_page.dart';
 import 'widgets/create_new_list_dialog.dart';
 import 'widgets/latest_shopping_list_card.dart';
 import 'widgets/previous_shopping_list_item.dart';
@@ -49,7 +51,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
 
               if (listData == null || listData.isEmpty) {
                 return Center(
-                  child: ShoppingListErrorWidget(
+                  child: ListErrorWidget(
                     caption: 'You don’t have any\nshopping lists',
                     actionButton: _createNewListButton(context),
                   ),
@@ -70,7 +72,17 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 10, bottom: 30),
-                          child: LatestShoppingListCard(data: listData.first),
+                          child: GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ListItemsPage(
+                                  selectedList: listData.first,
+                                ),
+                              ),
+                            ),
+                            child: LatestShoppingListCard(data: listData.first),
+                          ),
                         ),
                       ),
                       const SliverToBoxAdapter(
@@ -86,7 +98,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                           ? SliverToBoxAdapter(
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 60),
-                                child: ShoppingListErrorWidget(
+                                child: ListErrorWidget(
                                   caption: 'No more shopping lists !',
                                   actionButton: _createNewListButton(context),
                                 ),
@@ -102,7 +114,17 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                                   if (index == 0) {
                                     return const SizedBox.shrink();
                                   } else {
-                                    return PreviousShoppingListItem(data: listData[index]);
+                                    return GestureDetector(
+                                      onTap: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ListItemsPage(
+                                            selectedList: listData[index],
+                                          ),
+                                        ),
+                                      ),
+                                      child: PreviousShoppingListItem(data: listData[index]),
+                                    );
                                   }
                                 },
                                 separatorBuilder: (context, index) => const SizedBox(height: 10),
@@ -140,37 +162,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   void showCreateNewListDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => CreateNewListDialog(),
-    );
-  }
-}
-
-class ShoppingListErrorWidget extends StatelessWidget {
-  const ShoppingListErrorWidget({super.key, required this.caption, this.actionButton});
-
-  final String caption;
-  final Widget? actionButton;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          caption,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 18,
-          ),
-        ),
-        if (actionButton != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: actionButton!,
-          ),
-      ],
+      builder: (dialogContext) => const CreateNewListDialog(),
     );
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../utils/constants/app_colors.dart';
 
-class PrimaryButtonSkin extends StatelessWidget {
-  const PrimaryButtonSkin({
+class SecondaryButtonSkin extends StatelessWidget {
+  const SecondaryButtonSkin({
     super.key,
     required this.title,
     this.internalPadding = const EdgeInsets.fromLTRB(35, 8, 35, 10),
@@ -19,15 +19,7 @@ class PrimaryButtonSkin extends StatelessWidget {
         padding: internalPadding,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          gradient: const LinearGradient(
-            begin: Alignment.bottomCenter,
-            end: Alignment.topCenter,
-            colors: [
-              AppColors.green1,
-              AppColors.green2,
-            ],
-          ),
-          border: Border.all(width: 2, color: Colors.white, strokeAlign: BorderSide.strokeAlignOutside),
+          color: AppColors.grey1,
         ),
         child: Center(
           child: Text(

@@ -3,6 +3,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../domain/models/list_item_dto.dart';
 import '../../domain/models/shopping_list_dto.dart';
+import '../../domain/repositories/list_item_repository.dart';
 import '../../domain/repositories/shopping_list_repository.dart';
 
 class ShoppingListBloc {
@@ -26,5 +27,6 @@ class ShoppingListBloc {
 
   Future<void> retrieveShoppingLists() async {
     setShoppingList(await GetIt.instance<ShoppingListRepository>().getShoppingLists());
+    setListItems(await GetIt.instance<ListItemRepository>().getListItems());
   }
 }

@@ -5,28 +5,38 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../config/themes/input_decorations.dart';
+import '../../../../domain/models/shopping_list_dto.dart';
 import '../../../../utils/resources/message_utils.dart';
-import '../../../cubits/shopping_list/create_new_list_cubit.dart';
+import '../../../cubits/shopping_items/update_shopping_list_cubit.dart';
 import '../../../states/data_payload_state.dart';
 import '../../../widgets/primary_button_skin.dart';
 
-class CreateNewListDialog extends StatefulWidget {
-  const CreateNewListDialog({super.key});
+class UpdateShoppingListDialog extends StatefulWidget {
+  const UpdateShoppingListDialog({super.key, required this.selectedList});
+  final ShoppingListDto selectedList;
 
   @override
-  State<CreateNewListDialog> createState() => _CreateNewListDialogState();
+  State<UpdateShoppingListDialog> createState() => _UpdateShoppingListDialogState();
 }
 
-class _CreateNewListDialogState extends State<CreateNewListDialog> {
-  final _createNewListCubit = CreateNewListCubit();
+class _UpdateShoppingListDialogState extends State<UpdateShoppingListDialog> {
+  final _updateCubit = UpdateShoppingListCubit();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final _titleController = TextEditingController();
   final _dateController = TextEditingController();
 
-  DateTime _selectedDay = DateTime.now();
+  late DateTime _selectedDay;
   DateTime _focusedDay = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _titleController.text = widget.selectedList.title;
+    _dateController.text = DateFormat("EEEE d, MMM y").format(widget.selectedList.date);
+    _selectedDay = widget.selectedList.date;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -104,20 +114,23 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 120),
-                    child: BlocProvider<CreateNewListCubit>(
-                      create: (context) => _createNewListCubit,
+                    child: BlocProvider<UpdateShoppingListCubit>(
+                      create: (context) => _updateCubit,
                       child: BlocListener(
-                        bloc: _createNewListCubit,
+                        bloc: _updateCubit,
                         listener: (context, state) {
                           if (state is ErrorState) {
                             MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
                           } else if (state is SuccessState) {
-                            Navigator.pop(context);
-                            MessageUtils.showSnackBarOverBarrier(context, 'List saved successfully');
+                            int pagesToPop = 2;
+                            Navigator.popUntil(context, (route) {
+                              return pagesToPop-- == 0;
+                            });
+                            MessageUtils.showSnackBarOverBarrier(context, 'Shopping list updated successfully');
                           }
                         },
-                        child: BlocBuilder<CreateNewListCubit, DataPayloadState>(
-                            bloc: _createNewListCubit,
+                        child: BlocBuilder<UpdateShoppingListCubit, DataPayloadState>(
+                            bloc: _updateCubit,
                             builder: (context, state) {
                               if (state is RequestingState) {
                                 return const CupertinoActivityIndicator();
@@ -125,10 +138,10 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
 
                               return GestureDetector(
                                 onTap: () {
-                                  saveListAndAddItems();
+                                  _updateShoppingList();
                                 },
                                 child: const PrimaryButtonSkin(
-                                  title: 'Save & add items',
+                                  title: 'Update',
                                 ),
                               );
                             }),
@@ -180,9 +193,9 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
     );
   }
 
-  void saveListAndAddItems() {
+  void _updateShoppingList() {
     if (_formKey.currentState!.validate()) {
-      _createNewListCubit.createShoppingList(_titleController.text, _selectedDay);
+      _updateCubit.updateShoppingList(_titleController.text, _selectedDay, widget.selectedList);
     }
   }
 }
