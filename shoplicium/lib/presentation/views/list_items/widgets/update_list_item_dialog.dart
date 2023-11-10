@@ -11,6 +11,7 @@ import '../../../../utils/constants/app_colors.dart';
 import '../../../../utils/constants/assets.dart';
 import '../../../../utils/resources/message_utils.dart';
 import '../../../cubits/shopping_items/delete_list_item_cubit.dart';
+import '../../../cubits/shopping_items/move_item_to_latest_list_cubit.dart';
 import '../../../cubits/shopping_items/update_list_item_cubit.dart';
 import '../../../states/data_payload_state.dart';
 import '../../../widgets/primary_button_skin.dart';
@@ -29,6 +30,7 @@ class UpdateListItemDialog extends StatefulWidget {
 class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
   final _updateCubit = UpdateListItemCubit();
   final _deleteCubit = DeleteListItemCubit();
+  final _moveToLatestCubit = MoveItemToLatestListCubit();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -59,210 +61,244 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
                   padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
                   child: Form(
                     key: _formKey,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 23),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Edit shopping item',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 23),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Edit shopping item',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ),
-                              GestureDetector(
-                                behavior: HitTestBehavior.opaque,
-                                onTap: () {
-                                  setState(() {
-                                    _isEditMode = false;
-                                  });
-                                },
-                                child: SvgPicture.asset(
-                                  Assets.deleteIconWhite,
-                                  width: 27,
-                                  height: 27,
-                                  colorFilter: const ColorFilter.mode(AppColors.darkBlue1, BlendMode.srcIn),
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: () {
+                                    setState(() {
+                                      _isEditMode = false;
+                                    });
+                                  },
+                                  child: SvgPicture.asset(
+                                    Assets.deleteIconWhite,
+                                    width: 27,
+                                    height: 27,
+                                    colorFilter: const ColorFilter.mode(AppColors.darkBlue1, BlendMode.srcIn),
+                                  ),
                                 ),
+                              ],
+                            ),
+                          ),
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Title',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
                               ),
+                            ),
+                          ),
+                          TextFormField(
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            controller: _titleController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Title is required';
+                              }
+
+                              return null;
+                            },
+                            decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Cheese'),
+                          ),
+                          const SizedBox(height: 22),
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Amount',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          TextFormField(
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            controller: _amountController,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(10),
+                              FilteringTextInputFormatter.digitsOnly,
                             ],
-                          ),
-                        ),
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Title',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          controller: _titleController,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Title is required';
-                            }
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Amount is required';
+                              }
 
-                            return null;
-                          },
-                          decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Cheese'),
-                        ),
-                        const SizedBox(height: 22),
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Amount',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
+                              return null;
+                            },
+                            decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: 50'),
+                          ),
+                          const SizedBox(height: 22),
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Unit of measure',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
-                        ),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          controller: _amountController,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(10),
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Amount is required';
-                            }
-
-                            return null;
-                          },
-                          decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: 50'),
-                        ),
-                        const SizedBox(height: 22),
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Unit of measure',
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 62,
-                          child: ButtonTheme(
-                            alignedDropdown: true,
-                            child: DropdownButtonFormField<UnitOfMeasureEnum>(
-                              value: _selectedUOM,
-                              items: UnitOfMeasureEnum.values
-                                  .map(
-                                    (item) => DropdownMenuItem<UnitOfMeasureEnum>(
-                                      value: item,
-                                      child: Text(
-                                        '${item.text} (${item.symbol})',
-                                        textAlign: TextAlign.left,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
+                          SizedBox(
+                            height: 62,
+                            child: ButtonTheme(
+                              alignedDropdown: true,
+                              child: DropdownButtonFormField<UnitOfMeasureEnum>(
+                                value: _selectedUOM,
+                                items: UnitOfMeasureEnum.values
+                                    .map(
+                                      (item) => DropdownMenuItem<UnitOfMeasureEnum>(
+                                        value: item,
+                                        child: Text(
+                                          '${item.text} (${item.symbol})',
+                                          textAlign: TextAlign.left,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 18,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  )
-                                  .toList(),
-                              dropdownColor: AppColors.blue1,
-                              decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: AppColors.blue1,
-                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
-                              borderRadius: BorderRadius.circular(8),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                              ),
-                              enableFeedback: true,
-                              iconEnabledColor: Colors.white,
-                              iconSize: 30,
-                              onChanged: (UnitOfMeasureEnum? value) {
-                                _selectedUOM = value ?? UnitOfMeasureEnum.kg;
-                              },
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 50),
-                          child: BlocProvider<UpdateListItemCubit>(
-                            create: (context) => _updateCubit,
-                            child: BlocListener<UpdateListItemCubit, DataPayloadState>(
-                              bloc: _updateCubit,
-                              listener: (context, state) {
-                                if (state is ErrorState) {
-                                  MessageUtils.showSnackBarOverBarrier(context, state.errorMessage,
-                                      isErrorMessage: true);
-                                } else if (state is SuccessState) {
-                                  Navigator.pop(context);
-                                  MessageUtils.showSnackBarOverBarrier(context, 'Item updated successfully');
-                                }
-                              },
-                              child: BlocBuilder<UpdateListItemCubit, DataPayloadState>(
-                                bloc: _updateCubit,
-                                builder: (context, state) {
-                                  if (state is RequestingState) {
-                                    return const CupertinoActivityIndicator();
-                                  }
-
-                                  return GestureDetector(
-                                    onTap: () {
-                                      _updateListItem();
-                                    },
-                                    child: const PrimaryButtonSkin(
-                                      title: 'Update',
-                                      internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
-                                    ),
-                                  );
+                                    )
+                                    .toList(),
+                                dropdownColor: AppColors.blue1,
+                                decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: AppColors.blue1,
+                                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+                                borderRadius: BorderRadius.circular(8),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 18,
+                                ),
+                                enableFeedback: true,
+                                iconEnabledColor: Colors.white,
+                                iconSize: 30,
+                                onChanged: (UnitOfMeasureEnum? value) {
+                                  _selectedUOM = value ?? UnitOfMeasureEnum.kg;
                                 },
                               ),
                             ),
                           ),
-                        ),
-                        if (!widget.isLatestList)
                           Padding(
-                            padding: const EdgeInsets.only(top: 15),
-                            child: InkWell(
-                              onTap: () {},
-                              // behavior: HitTestBehavior.opaque,
-                              borderRadius: BorderRadius.circular(5),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text(
-                                      'Move to latest\nshopping list',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: AppColors.darkBlue1,
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 18,
+                            padding: const EdgeInsets.only(top: 50),
+                            child: BlocProvider<UpdateListItemCubit>(
+                              create: (context) => _updateCubit,
+                              child: BlocListener<UpdateListItemCubit, DataPayloadState>(
+                                bloc: _updateCubit,
+                                listener: (context, state) {
+                                  if (state is ErrorState) {
+                                    MessageUtils.showSnackBarOverBarrier(context, state.errorMessage,
+                                        isErrorMessage: true);
+                                  } else if (state is SuccessState) {
+                                    Navigator.pop(context);
+                                    MessageUtils.showSnackBarOverBarrier(context, 'Item updated successfully');
+                                  }
+                                },
+                                child: BlocBuilder<UpdateListItemCubit, DataPayloadState>(
+                                  bloc: _updateCubit,
+                                  builder: (context, state) {
+                                    if (state is RequestingState) {
+                                      return const CupertinoActivityIndicator();
+                                    }
+
+                                    return GestureDetector(
+                                      onTap: () {
+                                        _updateListItem();
+                                      },
+                                      child: const PrimaryButtonSkin(
+                                        title: 'Update',
+                                        internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
                                       ),
-                                    ),
-                                    const SizedBox(width: 9),
-                                    SvgPicture.asset(Assets.moveToListIcon, width: 25, height: 25),
-                                  ],
+                                    );
+                                  },
                                 ),
                               ),
                             ),
                           ),
-                      ],
+                          if (!widget.isLatestList)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: Column(
+                                children: [
+                                  BlocProvider<MoveItemToLatestListCubit>(
+                                    create: (context) => _moveToLatestCubit,
+                                    child: BlocListener<MoveItemToLatestListCubit, DataPayloadState>(
+                                      bloc: _moveToLatestCubit,
+                                      listener: (context, state) {
+                                        if (state is ErrorState) {
+                                          MessageUtils.showSnackBarOverBarrier(context, state.errorMessage,
+                                              isErrorMessage: true);
+                                        } else if (state is SuccessState) {
+                                          Navigator.pop(context);
+                                          MessageUtils.showSnackBarOverBarrier(
+                                              context, 'Item moved to latest shopping list successfully');
+                                        }
+                                      },
+                                      child: BlocBuilder<MoveItemToLatestListCubit, DataPayloadState>(
+                                          bloc: _moveToLatestCubit,
+                                          builder: (context, state) {
+                                            return InkWell(
+                                              onTap: () => _moveItemToLatestShoppingList(),
+                                              borderRadius: BorderRadius.circular(5),
+                                              child: Padding(
+                                                padding: const EdgeInsets.all(4.0),
+                                                child: Row(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  mainAxisAlignment: MainAxisAlignment.center,
+                                                  children: [
+                                                    Text(
+                                                      '${state is RequestingState ? 'Moving' : 'Move'} to latest\nshopping list',
+                                                      textAlign: TextAlign.center,
+                                                      style: const TextStyle(
+                                                        color: AppColors.darkBlue1,
+                                                        fontWeight: FontWeight.w600,
+                                                        fontSize: 18,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 9),
+                                                    SvgPicture.asset(Assets.moveToListIcon, width: 25, height: 25),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          }),
+                                    ),
+                                  ),
+                                  Text(
+                                    'You can edit item details\nwhen moving to latest list',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.black.withOpacity(0.55),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 )
@@ -339,6 +375,17 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
   void _updateListItem() {
     if (_formKey.currentState!.validate()) {
       _updateCubit.updateListItem(
+        title: _titleController.text,
+        amount: int.tryParse(_amountController.text) ?? 0,
+        unitOfMeasure: _selectedUOM,
+        existingData: widget.selectedItem,
+      );
+    }
+  }
+
+  void _moveItemToLatestShoppingList() {
+    if (_formKey.currentState!.validate()) {
+      _moveToLatestCubit.moveToLatest(
         title: _titleController.text,
         amount: int.tryParse(_amountController.text) ?? 0,
         unitOfMeasure: _selectedUOM,
