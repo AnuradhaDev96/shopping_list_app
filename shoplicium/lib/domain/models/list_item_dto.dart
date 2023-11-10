@@ -1,3 +1,4 @@
+import '../enums/list_item_status_enum.dart';
 import '../enums/unit_of_measure_enum.dart';
 
 class ListItemDto {

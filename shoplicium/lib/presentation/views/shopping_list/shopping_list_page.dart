@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import '../../../config/themes/text_styles.dart';
 import '../../../domain/models/shopping_list_dto.dart';
 import '../../cubits/shopping_list_bloc.dart';
+import '../../widgets/list_error_widget.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
 import 'widgets/create_new_list_dialog.dart';
@@ -49,7 +50,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
 
               if (listData == null || listData.isEmpty) {
                 return Center(
-                  child: ShoppingListErrorWidget(
+                  child: ListErrorWidget(
                     caption: 'You don’t have any\nshopping lists',
                     actionButton: _createNewListButton(context),
                   ),
@@ -86,7 +87,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                           ? SliverToBoxAdapter(
                               child: Padding(
                                 padding: const EdgeInsets.only(top: 60),
-                                child: ShoppingListErrorWidget(
+                                child: ListErrorWidget(
                                   caption: 'No more shopping lists !',
                                   actionButton: _createNewListButton(context),
                                 ),
@@ -145,32 +146,4 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
   }
 }
 
-class ShoppingListErrorWidget extends StatelessWidget {
-  const ShoppingListErrorWidget({super.key, required this.caption, this.actionButton});
 
-  final String caption;
-  final Widget? actionButton;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          caption,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-            fontSize: 18,
-          ),
-        ),
-        if (actionButton != null)
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: actionButton!,
-          ),
-      ],
-    );
-  }
-}
