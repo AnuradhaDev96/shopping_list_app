@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import '../../../config/themes/text_styles.dart';
 import '../../../domain/models/list_item_dto.dart';
 import '../../../domain/models/shopping_list_dto.dart';
+import '../../../utils/constants/app_colors.dart';
 import '../../../utils/constants/assets.dart';
 import '../../cubits/shopping_list_bloc.dart';
 import '../../widgets/list_error_widget.dart';
@@ -31,6 +32,9 @@ class _ListItemsPageState extends State<ListItemsPage> {
   final _scrollController = ScrollController();
 
   ListItemFilterEnum _selectedFilter = ListItemFilterEnum.remaining;
+
+  OverlayEntry? _overlayEntry;
+  final _helpIconKey = GlobalKey(debugLabel: 'helpIconKey');
 
   @override
   Widget build(BuildContext context) {
@@ -168,10 +172,15 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                     style: TextStyles.sectionTitleTextStyle,
                                   ),
                                   const SizedBox(width: 7),
-                                  SvgPicture.asset(
-                                    Assets.helpIcon,
-                                    width: 26,
-                                    height: 26,
+                                  GestureDetector(
+                                    key: _helpIconKey,
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: () => _createHelpGuideOverlay(),
+                                    child: SvgPicture.asset(
+                                      Assets.helpIcon,
+                                      width: 26,
+                                      height: 26,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -300,6 +309,130 @@ class _ListItemsPageState extends State<ListItemsPage> {
       case ListItemFilterEnum.inBag:
         return itemsOfShoppingList.where((element) => element.status.dtoValue == _selectedFilter.statusValue).toList();
     }
+  }
+
+  void _createHelpGuideOverlay() {
+    final RenderBox renderBox = _helpIconKey.currentContext!.findRenderObject() as RenderBox;
+    final buttonPosition = renderBox.localToGlobal(Offset.zero);
+    final overlayPosition = Offset(buttonPosition.dx, buttonPosition.dy);
+
+    _removeHelpGuideOverlay();
+    assert(_overlayEntry == null);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return GestureDetector(
+          onTap: () => _removeHelpGuideOverlay(),
+          child: Material(
+            color: Colors.black.withOpacity(0.55),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: overlayPosition.dy,
+                  right: 0,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 30, bottom: 37),
+                    margin: const EdgeInsets.only(left: 25, right: 25),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkBlue2,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        width: 3,
+                        color: const Color(0xFFBDBDBD),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: const TextSpan(
+                            style: TextStyle(
+                              fontFamily: TextStyles.defaultFontFamily,
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 18,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Tap on shopping item to\n',
+                              ),
+                              TextSpan(
+                                text: 'edit, delete ',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'or\n',
+                              ),
+                              TextSpan(
+                                text: 'move to latest shopping list.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 33),
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: const TextSpan(
+                            style: TextStyle(
+                              fontFamily: TextStyles.defaultFontFamily,
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 18,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Tap on action buttons to move\nitem ',
+                              ),
+                              TextSpan(
+                                text: '“to bag” ',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'or\n mark as ',
+                              ),
+                              TextSpan(
+                                text: '“not in shop”',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    Overlay.of(context, debugRequiredFor: widget).insert(_overlayEntry!);
+  }
+
+  void _removeHelpGuideOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 }
 
