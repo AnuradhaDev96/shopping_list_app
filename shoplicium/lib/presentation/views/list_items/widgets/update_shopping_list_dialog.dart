@@ -122,7 +122,10 @@ class _UpdateShoppingListDialogState extends State<UpdateShoppingListDialog> {
                           if (state is ErrorState) {
                             MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
                           } else if (state is SuccessState) {
-                            Navigator.pop(context);
+                            int pagesToPop = 2;
+                            Navigator.popUntil(context, (route) {
+                              return pagesToPop-- == 0;
+                            });
                             MessageUtils.showSnackBarOverBarrier(context, 'Shopping list updated successfully');
                           }
                         },
