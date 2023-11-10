@@ -329,6 +329,15 @@ class _ListItemsPageState extends State<ListItemsPage> {
               children: [
                 Positioned(
                   top: overlayPosition.dy,
+                  left: overlayPosition.dx,
+                  child: SvgPicture.asset(
+                    Assets.helpIcon,
+                    width: 26,
+                    height: 26,
+                  ),
+                ),
+                Positioned(
+                  top: overlayPosition.dy + 36,
                   right: 0,
                   left: 0,
                   child: Container(
