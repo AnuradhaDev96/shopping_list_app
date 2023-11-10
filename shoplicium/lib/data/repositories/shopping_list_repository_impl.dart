@@ -28,4 +28,12 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
 
     return list;
   }
+
+  @override
+  Future<bool> deleteShoppingList(String listId) async {
+    final db = await _dataSource.getDatabase();
+    final deletedRowCount = await db.delete(_tableName, where: 'listId = ?', whereArgs: [listId]);
+
+    return deletedRowCount > 0 ? true : false;
+  }
 }

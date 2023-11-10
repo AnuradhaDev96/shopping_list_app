@@ -1,14 +1,22 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../utils/constants/app_colors.dart';
 import '../../../../utils/constants/assets.dart';
+import '../../../../utils/resources/message_utils.dart';
+import '../../../cubits/shopping_items/delete_shopping_list_cubit.dart';
+import '../../../states/data_payload_state.dart';
 import '../../../widgets/primary_button_skin.dart';
 import '../../../widgets/secondary_button_skin.dart';
 
 class DeleteListItemDialog extends StatelessWidget {
-  const DeleteListItemDialog({super.key, required this.listId});
+  DeleteListItemDialog({super.key, required this.listId});
+
   final String listId;
+
+  final _deleteListCubit = DeleteShoppingListCubit();
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +48,39 @@ class DeleteListItemDialog extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 35),
-                const PrimaryButtonSkin(title: 'Yes', internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10)),
+                BlocProvider<DeleteShoppingListCubit>(
+                  create: (context) => _deleteListCubit,
+                  child: BlocListener<DeleteShoppingListCubit, DataPayloadState>(
+                    listener: (context, state) {
+                      if (state is ErrorState) {
+                        MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
+                      } else if (state is SuccessState) {
+                        int pagesToPop = 2;
+                        Navigator.popUntil(context, (route) {
+                          return pagesToPop-- == 0;
+                        });
+                        MessageUtils.showSnackBarOverBarrier(context, 'Shopping list\ndeleted successfully');
+                      }
+                    },
+                    child: BlocBuilder<DeleteShoppingListCubit, DataPayloadState>(
+                      builder: (context, state) {
+                        if (state is RequestingState) {
+                          return const CupertinoActivityIndicator();
+                        }
+
+                        return GestureDetector(
+                          onTap: () {
+                            _deleteListCubit.deleteShoppingList(listId);
+                          },
+                          child: const PrimaryButtonSkin(
+                            title: 'Yes',
+                            internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 9),
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
