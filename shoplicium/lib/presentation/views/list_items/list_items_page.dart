@@ -14,6 +14,7 @@ import '../../widgets/scaffold_decoration.dart';
 import 'widgets/create_list_item_dialog.dart';
 import 'widgets/delete_list_item_dialog.dart';
 import 'widgets/list_item_card.dart';
+import 'widgets/update_shopping_list_dialog.dart';
 
 class ListItemsPage extends StatefulWidget {
   const ListItemsPage({super.key, required this.selectedList});
@@ -222,7 +223,17 @@ class _ListItemsPageState extends State<ListItemsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                SvgPicture.asset(Assets.editIcon, width: 37, height: 37),
+                GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) {
+                          return UpdateShoppingListDialog(selectedList: widget.selectedList);
+                        },
+                      );
+                    },
+                    child: SvgPicture.asset(Assets.editIcon, width: 37, height: 37)),
                 const SizedBox(width: 10),
                 GestureDetector(
                   behavior: HitTestBehavior.opaque,
@@ -244,15 +255,13 @@ class _ListItemsPageState extends State<ListItemsPage> {
 
   Widget _addNewItemButton(BuildContext context) {
     return GestureDetector(
-      onTap: () => _showCreateListItemDialog(context),
+      onTap: () {
+        showDialog(
+          context: context,
+          builder: (dialogContext) => CreateListItemDialog(listId: widget.selectedList.listId),
+        );
+      },
       child: const PrimaryButtonSkin(title: 'Add new item'),
-    );
-  }
-
-  void _showCreateListItemDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => CreateListItemDialog(listId: widget.selectedList.listId),
     );
   }
 

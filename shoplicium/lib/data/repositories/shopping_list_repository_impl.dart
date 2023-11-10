@@ -36,4 +36,12 @@ class ShoppingListRepositoryImpl implements ShoppingListRepository {
 
     return deletedRowCount > 0 ? true : false;
   }
+
+  @override
+  Future<bool> updateShoppingList(ShoppingListDto instance) async {
+    final db = await _dataSource.getDatabase();
+    final affectedRowCount = await db.update(_tableName, instance.toMap(), where: 'listId = ?', whereArgs: [instance.listId]);
+
+    return affectedRowCount > 0 ?  true : false;
+  }
 }

@@ -7,4 +7,6 @@ abstract class ShoppingListRepository {
   Future<List<ShoppingListDto>> getShoppingLists();
 
   Future<bool> deleteShoppingList(String listId);
+
+  Future<bool> updateShoppingList(ShoppingListDto instance);
 }
