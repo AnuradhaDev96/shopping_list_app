@@ -235,7 +235,7 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
                         ),
                         if (!widget.isLatestList)
                           Padding(
-                            padding: const EdgeInsets.only(top: 11),
+                            padding: const EdgeInsets.only(top: 15),
                             child: InkWell(
                               onTap: () {},
                               // behavior: HitTestBehavior.opaque,
@@ -247,7 +247,8 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     const Text(
-                                      'Move to latest list',
+                                      'Move to latest\nshopping list',
+                                      textAlign: TextAlign.center,
                                       style: TextStyle(
                                         color: AppColors.darkBlue1,
                                         fontWeight: FontWeight.w600,
