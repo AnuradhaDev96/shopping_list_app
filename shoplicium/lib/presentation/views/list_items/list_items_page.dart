@@ -25,7 +25,7 @@ class ListItemsPage extends StatefulWidget {
 class _ListItemsPageState extends State<ListItemsPage> {
   final _scrollController = ScrollController();
 
-  ListItemFilterEnum _selectedFilter = ListItemFilterEnum.all;
+  ListItemFilterEnum _selectedFilter = ListItemFilterEnum.remaining;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +54,9 @@ class _ListItemsPageState extends State<ListItemsPage> {
         floatingActionButton: _bottomFloatingBar(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: StreamBuilder<List<ListItemDto>>(
-          stream: GetIt.instance<ShoppingListBloc>().listItemsStream,
+          stream: GetIt
+              .instance<ShoppingListBloc>()
+              .listItemsStream,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CupertinoActivityIndicator(radius: 20));
@@ -74,7 +76,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
               } else {
                 // listData has at least one record
                 var itemsOfSelectedShoppingList =
-                    listData.where((element) => element.listId == widget.selectedList.listId).toList();
+                listData.where((element) => element.listId == widget.selectedList.listId).toList();
 
                 if (itemsOfSelectedShoppingList.isEmpty) {
                   return Center(
@@ -161,8 +163,8 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                 ],
                               ),
                               Text(
-                                _selectedFilter.counterText,
-                                style: TextStyle(
+                                '${_getFilteredListItems(itemsOfSelectedShoppingList).length} ${_selectedFilter.counterText}',
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
                                   fontSize: 18,
@@ -170,7 +172,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
                               ),
                             ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   );
@@ -195,7 +197,8 @@ class _ListItemsPageState extends State<ListItemsPage> {
     );
   }
 
-  Widget _bottomFloatingBar(BuildContext context) => Padding(
+  Widget _bottomFloatingBar(BuildContext context) =>
+      Padding(
         padding: const EdgeInsets.only(left: 27, right: 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -226,13 +229,24 @@ class _ListItemsPageState extends State<ListItemsPage> {
       builder: (dialogContext) => CreateListItemDialog(listId: widget.selectedList.listId),
     );
   }
+
+  List<ListItemDto> _getFilteredListItems(List<ListItemDto> itemsOfShoppingList) {
+    switch (_selectedFilter) {
+      case ListItemFilterEnum.all:
+        return itemsOfShoppingList;
+      case ListItemFilterEnum.remaining:
+      case ListItemFilterEnum.notInShop:
+        return itemsOfShoppingList.where((element) => element.status.dtoValue == _selectedFilter.statusValue).toList();
+    }
+  }
 }
 
 enum ListItemFilterEnum {
-  /// [all] does not have a status value in table
-  all(statusValue: 0, text: "All items", counterText: 'total'),
   remaining(statusValue: 1, text: "Remaining", counterText: 'remaining'),
-  notInShop(statusValue: 3, text: "Not in shop", counterText: 'not found');
+  notInShop(statusValue: 3, text: "Not in shop", counterText: 'not found'),
+
+  /// [all] does not have a status value in table
+  all(statusValue: 0, text: "All items", counterText: 'total');
 
   final int statusValue;
   final String text;
