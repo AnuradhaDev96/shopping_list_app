@@ -31,6 +31,17 @@ class _ListItemsPageState extends State<ListItemsPage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.selectedList.title),
+          leading: Transform.translate(
+            offset: const Offset(18, 0),
+            child: Transform.scale(
+              scale: 0.7,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => Navigator.pop(context),
+                child: SvgPicture.asset(Assets.navigateBack, width: 32, height: 32),
+              ),
+            ),
+          ),
         ),
         floatingActionButton: _bottomFloatingBar(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -140,8 +151,8 @@ class _ListItemsPageState extends State<ListItemsPage> {
   }
 
   Widget _bottomFloatingBar(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(left: 27, right: 20),
-    child: Row(
+        padding: const EdgeInsets.only(left: 27, right: 20),
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             _addNewItemButton(context),
@@ -154,7 +165,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
             ),
           ],
         ),
-  );
+      );
 
   Widget _addNewItemButton(BuildContext context) {
     return GestureDetector(
