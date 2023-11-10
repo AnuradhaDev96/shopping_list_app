@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import '../../utils/constants/app_colors.dart';
 
 class PrimaryButtonSkin extends StatelessWidget {
-  const PrimaryButtonSkin({super.key, required this.title});
+  const PrimaryButtonSkin({
+    super.key,
+    required this.title,
+    this.internalPadding = const EdgeInsets.fromLTRB(35, 8, 35, 10),
+  });
+
   final String title;
+  final EdgeInsetsGeometry internalPadding;
 
   @override
   Widget build(BuildContext context) {
     return FittedBox(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(35, 8, 35, 10),
+        padding: internalPadding,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           gradient: const LinearGradient(

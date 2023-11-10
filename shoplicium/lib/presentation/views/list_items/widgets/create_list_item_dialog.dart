@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../../config/themes/input_decorations.dart';
 import '../../../../domain/enums/unit_of_measure_enum.dart';
 import '../../../../utils/constants/app_colors.dart';
+import '../../../widgets/primary_button_skin.dart';
 
 class CreateListItemDialog extends StatefulWidget {
   const CreateListItemDialog({super.key, required this.listId});
@@ -110,41 +111,63 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
                       ),
                     ),
                   ),
-                  ButtonTheme(
-                    alignedDropdown: true,
-                    child: DropdownButtonFormField<UnitOfMeasureEnum>(
-                      value: _selectedUOM,
-                      items: UnitOfMeasureEnum.values
-                          .map(
-                            (item) => DropdownMenuItem<UnitOfMeasureEnum>(
-                              value: item,
-                              child: Text(
-                                '${item.text} (${item.symbol})',
-                                textAlign: TextAlign.left,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 18,
+                  SizedBox(
+                    height: 62,
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButtonFormField<UnitOfMeasureEnum>(
+                        value: _selectedUOM,
+                        items: UnitOfMeasureEnum.values
+                            .map(
+                              (item) => DropdownMenuItem<UnitOfMeasureEnum>(
+                                value: item,
+                                child: Text(
+                                  '${item.text} (${item.symbol})',
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 18,
+                                  ),
                                 ),
                               ),
-                            ),
+                            )
+                            .toList(),
+                        dropdownColor: AppColors.blue1,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: AppColors.blue1,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8)
                           )
-                          .toList(),
-                      dropdownColor: AppColors.blue1,
-                      borderRadius: BorderRadius.circular(8),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 18,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 18,
+                        ),
+                        enableFeedback: true,
+                        iconEnabledColor: Colors.white,
+                        iconSize: 30,
+                        onChanged: (UnitOfMeasureEnum? value) {
+                          _selectedUOM = value ?? UnitOfMeasureEnum.kg;
+                        },
                       ),
-                      enableFeedback: true,
-                      iconEnabledColor: Colors.white,
-                      iconSize: 30,
-                      onChanged: (UnitOfMeasureEnum? value) {
-                        _selectedUOM = value ?? UnitOfMeasureEnum.kg;
-                      },
                     ),
                   ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 50),
+                    child: GestureDetector(
+                      onTap: () {
+                        _saveItemToShoppingList();
+                      },
+                      child: const PrimaryButtonSkin(
+                        title: 'Save',
+                        internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -152,5 +175,11 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
         ],
       ),
     );
+  }
+
+  void _saveItemToShoppingList() {
+    if (_formKey.currentState!.validate()) {
+      // _createNewListCubit.createShoppingList(_titleController.text, _selectedDay);
+    }
   }
 }
