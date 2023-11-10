@@ -14,6 +14,7 @@ import '../../widgets/scaffold_decoration.dart';
 import 'widgets/create_list_item_dialog.dart';
 import 'widgets/delete_list_item_dialog.dart';
 import 'widgets/list_item_card.dart';
+import 'widgets/update_list_item_dialog.dart';
 import 'widgets/update_shopping_list_dialog.dart';
 
 class ListItemsPage extends StatefulWidget {
@@ -183,7 +184,18 @@ class _ListItemsPageState extends State<ListItemsPage> {
                               controller: _scrollController,
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
-                                return ListItemCard(data: _getFilteredListItems(itemsOfSelectedShoppingList)[index]);
+                                var listItemData = _getFilteredListItems(itemsOfSelectedShoppingList)[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (dialogContext) {
+                                        return UpdateListItemDialog(selectedItem: listItemData);
+                                      },
+                                    );
+                                  },
+                                  child: ListItemCard(data: listItemData),
+                                );
                               },
                               separatorBuilder: (context, index) => const SizedBox(height: 10),
                               itemCount: _getFilteredListItems(itemsOfSelectedShoppingList).length,

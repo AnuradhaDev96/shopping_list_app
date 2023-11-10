@@ -24,4 +24,12 @@ class ListItemRepositoryImpl implements ListItemRepository {
 
     return records.map((e) => ListItemDto.fromMap(e)).toList();
   }
+
+  @override
+  Future<bool> updateListItem(ListItemDto instance) async {
+    final db = await _dataSource.getDatabase();
+    final affectedRowCount = await db.update(_tableName, instance.toMap(), where: 'itemId = ?', whereArgs: [instance.itemId]);
+
+    return affectedRowCount > 0 ?  true : false;
+  }
 }
