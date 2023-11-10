@@ -12,6 +12,7 @@ import '../../widgets/list_error_widget.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
 import 'widgets/create_list_item_dialog.dart';
+import 'widgets/list_item_card.dart';
 
 class ListItemsPage extends StatefulWidget {
   const ListItemsPage({super.key, required this.selectedList});
@@ -54,9 +55,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
         floatingActionButton: _bottomFloatingBar(context),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: StreamBuilder<List<ListItemDto>>(
-          stream: GetIt
-              .instance<ShoppingListBloc>()
-              .listItemsStream,
+          stream: GetIt.instance<ShoppingListBloc>().listItemsStream,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CupertinoActivityIndicator(radius: 20));
@@ -76,7 +75,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
               } else {
                 // listData has at least one record
                 var itemsOfSelectedShoppingList =
-                listData.where((element) => element.listId == widget.selectedList.listId).toList();
+                    listData.where((element) => element.listId == widget.selectedList.listId).toList();
 
                 if (itemsOfSelectedShoppingList.isEmpty) {
                   return Center(
@@ -173,6 +172,22 @@ class _ListItemsPageState extends State<ListItemsPage> {
                             ],
                           ),
                         ),
+                        SliverFillRemaining(
+                          child: Padding(
+                            padding: EdgeInsets.only(bottom: MediaQuery.sizeOf(context).height * 0.08, top: 5),
+                            child: ListView.separated(
+                              padding: const EdgeInsets.only(top: 7, bottom: 5),
+                              physics: const BouncingScrollPhysics(),
+                              controller: _scrollController,
+                              shrinkWrap: true,
+                              itemBuilder: (context, index) {
+                                return ListItemCard(data: _getFilteredListItems(itemsOfSelectedShoppingList)[index]);
+                              },
+                              separatorBuilder: (context, index) => const SizedBox(height: 10),
+                              itemCount: _getFilteredListItems(itemsOfSelectedShoppingList).length,
+                            ),
+                          ),
+                        )
                       ],
                     ),
                   );
@@ -197,8 +212,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
     );
   }
 
-  Widget _bottomFloatingBar(BuildContext context) =>
-      Padding(
+  Widget _bottomFloatingBar(BuildContext context) => Padding(
         padding: const EdgeInsets.only(left: 27, right: 20),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
