@@ -6,6 +6,7 @@ abstract class Assets {
   static const navigateBack = 'assets/svg/navigate_back.svg';
   static const showBagIcon = 'assets/svg/show_bag_icon.svg';
   static const helpIcon = 'assets/svg/help_icon.svg';
+  static const openBagIcon = 'assets/svg/open_bag_icon.svg';
 
   // item status
   static const itemNotInShopIcon = 'assets/svg/item_not_in_shop_icon.svg';

@@ -33,6 +33,8 @@ class _ListItemsPageState extends State<ListItemsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final displayFilters = ListItemFilterEnum.values.where((element) => element != ListItemFilterEnum.inBag).toList();
+
     return ScaffoldDecoration(
       child: Scaffold(
         appBar: AppBar(
@@ -51,7 +53,15 @@ class _ListItemsPageState extends State<ListItemsPage> {
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 15),
-              child: SvgPicture.asset(Assets.showBagIcon, width: 41, height: 45),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() {
+                  _selectedFilter = ListItemFilterEnum.inBag;
+                }),
+                child: _selectedFilter == ListItemFilterEnum.inBag
+                    ? SvgPicture.asset(Assets.openBagIcon, width: 41, height: 52)
+                    : SvgPicture.asset(Assets.showBagIcon, width: 41, height: 45),
+              ),
             ),
           ],
         ),
@@ -103,7 +113,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                 scrollDirection: Axis.horizontal,
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
-                                  var filterItem = ListItemFilterEnum.values[index];
+                                  var filterItem = displayFilters[index];
                                   bool isSelected = filterItem == _selectedFilter;
 
                                   return GestureDetector(
@@ -141,7 +151,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                   );
                                 },
                                 separatorBuilder: (context, index) => const SizedBox(width: 25),
-                                itemCount: ListItemFilterEnum.values.length,
+                                itemCount: displayFilters.length,
                               ),
                             ),
                           ),
@@ -283,6 +293,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
         return itemsOfShoppingList;
       case ListItemFilterEnum.remaining:
       case ListItemFilterEnum.notInShop:
+      case ListItemFilterEnum.inBag:
         return itemsOfShoppingList.where((element) => element.status.dtoValue == _selectedFilter.statusValue).toList();
     }
   }
@@ -293,7 +304,8 @@ enum ListItemFilterEnum {
   notInShop(statusValue: 3, text: "Not in shop", counterText: 'not found'),
 
   /// [all] does not have a status value in table
-  all(statusValue: 0, text: "All items", counterText: 'total');
+  all(statusValue: 0, text: "All items", counterText: 'total'),
+  inBag(statusValue: 2, text: "In bag", counterText: 'in the bag');
 
   final int statusValue;
   final String text;
