@@ -12,7 +12,7 @@ import '../../widgets/list_error_widget.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
 import 'widgets/create_list_item_dialog.dart';
-import 'widgets/delete_list_item_dialog.dart';
+import 'widgets/delete_shopping_list_dialog.dart';
 import 'widgets/list_item_card.dart';
 import 'widgets/update_list_item_dialog.dart';
 import 'widgets/update_shopping_list_dialog.dart';
@@ -253,7 +253,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
                     showDialog(
                       context: context,
                       builder: (dialogContext) {
-                        return DeleteListItemDialog(listId: widget.selectedList.listId);
+                        return DeleteShoppingListDialog(listId: widget.selectedList.listId);
                       },
                     );
                   },

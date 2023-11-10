@@ -11,8 +11,8 @@ import '../../../states/data_payload_state.dart';
 import '../../../widgets/primary_button_skin.dart';
 import '../../../widgets/secondary_button_skin.dart';
 
-class DeleteListItemDialog extends StatelessWidget {
-  DeleteListItemDialog({super.key, required this.listId});
+class DeleteShoppingListDialog extends StatelessWidget {
+  DeleteShoppingListDialog({super.key, required this.listId});
 
   final String listId;
 
@@ -39,7 +39,7 @@ class DeleteListItemDialog extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 const Text(
-                  'Are you sure you want\nto delete this\nitem?',
+                  'Are you sure you want\nto delete this\n shopping list?',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
@@ -88,7 +88,7 @@ class DeleteListItemDialog extends StatelessWidget {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );

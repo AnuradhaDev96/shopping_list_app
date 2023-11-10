@@ -32,4 +32,12 @@ class ListItemRepositoryImpl implements ListItemRepository {
 
     return affectedRowCount > 0 ?  true : false;
   }
+
+  @override
+  Future<bool> deleteListItem(String itemId) async {
+    final db = await _dataSource.getDatabase();
+    final deletedRowCount = await db.delete(_tableName, where: 'itemId = ?', whereArgs: [itemId]);
+
+    return deletedRowCount > 0 ? true : false;
+  }
 }

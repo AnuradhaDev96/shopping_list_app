@@ -7,4 +7,6 @@ abstract class ListItemRepository {
   Future<List<ListItemDto>> getListItems();
 
   Future<bool> updateListItem(ListItemDto instance);
+
+  Future<bool> deleteListItem(String itemId);
 }
