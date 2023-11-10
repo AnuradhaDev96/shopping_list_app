@@ -49,7 +49,7 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),

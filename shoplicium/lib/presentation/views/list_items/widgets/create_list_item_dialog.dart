@@ -46,11 +46,11 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
                   const Padding(
                     padding: EdgeInsets.only(bottom: 23),
                     child: Text(
-                      'Create new list',
+                      'Create shopping item',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
