@@ -1,8 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../config/themes/input_decorations.dart';
+import '../../../../utils/resources/message_utils.dart';
+import '../../../cubits/shopping_list/create_new_list_cubit.dart';
+import '../../../states/data_payload_state.dart';
 import '../../../widgets/primary_button_skin.dart';
 
 class CreateNewListDialog extends StatefulWidget {
@@ -13,6 +18,8 @@ class CreateNewListDialog extends StatefulWidget {
 }
 
 class _CreateNewListDialogState extends State<CreateNewListDialog> {
+  final _createNewListCubit = CreateNewListCubit();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final _titleController = TextEditingController();
@@ -97,12 +104,34 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 120),
-                    child: GestureDetector(
-                      onTap: () {
-                        saveListAndAddItems();
-                      },
-                      child: const PrimaryButtonSkin(
-                        title: 'Save & add items',
+                    child: BlocProvider<CreateNewListCubit>(
+                      create: (context) => _createNewListCubit,
+                      child: BlocListener(
+                        bloc: _createNewListCubit,
+                        listener: (context, state) {
+                          if (state is ErrorState) {
+                            MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
+                          } else if (state is SuccessState) {
+                            Navigator.pop(context);
+                            MessageUtils.showSnackBarOverBarrier(context, 'List saved successfully');
+                          }
+                        },
+                        child: BlocBuilder<CreateNewListCubit, DataPayloadState>(
+                            bloc: _createNewListCubit,
+                            builder: (context, state) {
+                              if (state is RequestingState) {
+                                return const CupertinoActivityIndicator();
+                              }
+
+                              return GestureDetector(
+                                onTap: () {
+                                  saveListAndAddItems();
+                                },
+                                child: const PrimaryButtonSkin(
+                                  title: 'Save & add items',
+                                ),
+                              );
+                            }),
                       ),
                     ),
                   )
@@ -153,7 +182,7 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
 
   void saveListAndAddItems() {
     if (_formKey.currentState!.validate()) {
-
+      _createNewListCubit.createShoppingList(_titleController.text, _selectedDay);
     }
   }
 }
