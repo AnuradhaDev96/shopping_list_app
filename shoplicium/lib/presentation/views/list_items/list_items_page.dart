@@ -32,6 +32,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
   final _scrollController = ScrollController();
 
   ListItemFilterEnum _selectedFilter = ListItemFilterEnum.remaining;
+  ListItemFilterEnum _filterCache = ListItemFilterEnum.remaining;
 
   OverlayEntry? _overlayEntry;
   final _helpIconKey = GlobalKey(debugLabel: 'helpIconKey');
@@ -61,7 +62,12 @@ class _ListItemsPageState extends State<ListItemsPage> {
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => setState(() {
-                  _selectedFilter = ListItemFilterEnum.inBag;
+                  if (_selectedFilter != ListItemFilterEnum.inBag) {
+                    _filterCache = _selectedFilter;
+                    _selectedFilter = ListItemFilterEnum.inBag;
+                  } else {
+                    _selectedFilter = _filterCache;
+                  }
                 }),
                 child: _selectedFilter == ListItemFilterEnum.inBag
                     ? SvgPicture.asset(Assets.openBagIcon, width: 41, height: 52)
