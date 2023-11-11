@@ -113,7 +113,7 @@ class _UpdateShoppingListDialogState extends State<UpdateShoppingListDialog> {
                     decoration: InputDecorations.outlinedInputDecoration(hintText: 'Tap to select date'),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 120),
+                    padding: EdgeInsets.only(top: MediaQuery.sizeOf(context).width * 0.14),
                     child: BlocProvider<UpdateShoppingListCubit>(
                       create: (context) => _updateCubit,
                       child: BlocListener(
