@@ -114,8 +114,9 @@ class _ListItemsPageState extends State<ListItemsPage> {
                             height: 55,
                             child: Center(
                               child: ListView.separated(
-                                physics: const NeverScrollableScrollPhysics(),
+                                physics: const ClampingScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
                                   var filterItem = displayFilters[index];

@@ -332,7 +332,7 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
                               MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
                             } else if (state is SuccessState) {
                               Navigator.pop(context);
-                              MessageUtils.showSnackBarOverBarrier(context, 'Shopping list deleted successfully');
+                              MessageUtils.showSnackBarOverBarrier(context, 'Item deleted successfully');
                             }
                           },
                           child: BlocBuilder<DeleteListItemCubit, DataPayloadState>(
