@@ -208,9 +208,9 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                 var listItemData = _getFilteredListItems(itemsOfSelectedShoppingList)[index];
                                 return GestureDetector(
                                   onTap: () {
-                                    showDialog(
+                                    showGeneralDialog(
                                       context: context,
-                                      builder: (dialogContext) {
+                                      pageBuilder: (dialogContext, animation, secondaryAnimation) {
                                         return UpdateListItemDialog(
                                           selectedItem: listItemData,
                                           isLatestList: widget.isLatestList,
