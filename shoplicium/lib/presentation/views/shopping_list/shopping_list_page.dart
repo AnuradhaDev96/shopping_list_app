@@ -98,7 +98,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                       listData.length == 1
                           ? SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 60),
+                                padding: EdgeInsets.only(top: MediaQuery.sizeOf(context).width * 0.1),
                                 child: ListErrorWidget(
                                   caption: 'No more shopping lists !',
                                   actionButton: _createNewListButton(context),

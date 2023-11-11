@@ -53,39 +53,37 @@ class LatestShoppingListCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.only(bottom: 6, top: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBlue1,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '19',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
+              Container(
+                padding: const EdgeInsets.only(bottom: 6, top: 4, left: 6,right: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.darkBlue1,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '19',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
                         ),
-                        Text(
-                          'remaining',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.normal,
-                            fontSize: 14,
-                          ),
+                      ),
+                      Text(
+                        'remaining',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.normal,
+                          fontSize: 14,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(width: 25),
+              // const SizedBox(width: 25),
               const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -107,7 +105,7 @@ class LatestShoppingListCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: 25),
+              // const SizedBox(width: 25),
               const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -129,7 +127,7 @@ class LatestShoppingListCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(width: 25),
+              // const SizedBox(width: 25),
               const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
