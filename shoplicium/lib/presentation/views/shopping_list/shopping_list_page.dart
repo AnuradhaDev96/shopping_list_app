@@ -58,7 +58,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                 );
               } else {
                 return Padding(
-                  padding: const EdgeInsets.only(top: 20, left: 25, right: 25),
+                  padding: const EdgeInsets.only(top:5, left: 25, right: 25),
                   child: CustomScrollView(
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _scrollController,
@@ -71,7 +71,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 30),
+                          padding: const EdgeInsets.only(top: 10, bottom: 20),
                           child: GestureDetector(
                             onTap: () => Navigator.push(
                               context,

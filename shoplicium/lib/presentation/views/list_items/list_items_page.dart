@@ -110,7 +110,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
                   );
                 } else {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 23, left: 25, right: 25),
+                    padding: const EdgeInsets.only(top: 15, left: 25, right: 25),
                     child: CustomScrollView(
                       physics: const NeverScrollableScrollPhysics(),
                       controller: _scrollController,
