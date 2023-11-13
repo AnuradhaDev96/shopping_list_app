@@ -6,7 +6,7 @@ class PrimaryButtonSkin extends StatelessWidget {
   const PrimaryButtonSkin({
     super.key,
     required this.title,
-    this.internalPadding = const EdgeInsets.fromLTRB(35, 8, 35, 10),
+    this.internalPadding = const EdgeInsets.fromLTRB(35, 10, 35, 12),
   });
 
   final String title;
