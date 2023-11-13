@@ -55,7 +55,7 @@ class _UpdateShoppingListDialogState extends State<UpdateShoppingListDialog> {
                   const Padding(
                     padding: EdgeInsets.only(bottom: 23),
                     child: Text(
-                      'Create new list',
+                      'Edit shopping list',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -113,7 +113,7 @@ class _UpdateShoppingListDialogState extends State<UpdateShoppingListDialog> {
                     decoration: InputDecorations.outlinedInputDecoration(hintText: 'Tap to select date'),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(top: 120),
+                    padding: EdgeInsets.only(top: MediaQuery.sizeOf(context).width * 0.14),
                     child: BlocProvider<UpdateShoppingListCubit>(
                       create: (context) => _updateCubit,
                       child: BlocListener(

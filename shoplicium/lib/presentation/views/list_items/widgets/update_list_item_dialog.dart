@@ -11,15 +11,17 @@ import '../../../../utils/constants/app_colors.dart';
 import '../../../../utils/constants/assets.dart';
 import '../../../../utils/resources/message_utils.dart';
 import '../../../cubits/shopping_items/delete_list_item_cubit.dart';
+import '../../../cubits/shopping_items/move_item_to_latest_list_cubit.dart';
 import '../../../cubits/shopping_items/update_list_item_cubit.dart';
 import '../../../states/data_payload_state.dart';
 import '../../../widgets/primary_button_skin.dart';
 import '../../../widgets/secondary_button_skin.dart';
 
 class UpdateListItemDialog extends StatefulWidget {
-  const UpdateListItemDialog({super.key, required this.selectedItem});
+  const UpdateListItemDialog({super.key, required this.selectedItem, required this.isLatestList});
 
   final ListItemDto selectedItem;
+  final bool isLatestList;
 
   @override
   State<UpdateListItemDialog> createState() => _UpdateListItemDialogState();
@@ -28,6 +30,7 @@ class UpdateListItemDialog extends StatefulWidget {
 class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
   final _updateCubit = UpdateListItemCubit();
   final _deleteCubit = DeleteListItemCubit();
+  final _moveToLatestCubit = MoveItemToLatestListCubit();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -47,14 +50,20 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      backgroundColor: Colors.white,
-      surfaceTintColor: Colors.transparent,
-      child: Wrap(
-        children: [
-          _isEditMode
-              ? Padding(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<UpdateListItemCubit>(create: (context) => _updateCubit),
+        BlocProvider<DeleteListItemCubit>(create: (context) => _deleteCubit),
+        BlocProvider<MoveItemToLatestListCubit>(create: (context) => _moveToLatestCubit),
+      ],
+      child: _isEditMode
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 35),
+              child: Material(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: Colors.white,
+                surfaceTintColor: Colors.transparent,
+                child: SingleChildScrollView(
                   padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
                   child: Form(
                     key: _formKey,
@@ -198,74 +207,145 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(top: 50),
-                          child: BlocProvider<UpdateListItemCubit>(
-                            create: (context) => _updateCubit,
-                            child: BlocListener<UpdateListItemCubit, DataPayloadState>(
+                          child: BlocListener<UpdateListItemCubit, DataPayloadState>(
+                            bloc: _updateCubit,
+                            listener: (context, state) {
+                              if (state is ErrorState) {
+                                MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
+                              } else if (state is SuccessState) {
+                                Navigator.pop(context);
+                                MessageUtils.showSnackBarOverBarrier(context, 'Item updated successfully');
+                              }
+                            },
+                            child: BlocBuilder<UpdateListItemCubit, DataPayloadState>(
                               bloc: _updateCubit,
-                              listener: (context, state) {
-                                if (state is ErrorState) {
-                                  MessageUtils.showSnackBarOverBarrier(context, state.errorMessage,
-                                      isErrorMessage: true);
-                                } else if (state is SuccessState) {
-                                  Navigator.pop(context);
-                                  MessageUtils.showSnackBarOverBarrier(context, 'Item updated successfully');
+                              builder: (context, state) {
+                                if (state is RequestingState) {
+                                  return const CupertinoActivityIndicator();
                                 }
-                              },
-                              child: BlocBuilder<UpdateListItemCubit, DataPayloadState>(
-                                  bloc: _updateCubit,
-                                  builder: (context, state) {
-                                    if (state is RequestingState) {
-                                      return const CupertinoActivityIndicator();
-                                    }
 
-                                    return GestureDetector(
-                                      onTap: () {
-                                        _updateListItem();
-                                      },
-                                      child: const PrimaryButtonSkin(
-                                        title: 'Update',
-                                        internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
-                                      ),
-                                    );
-                                  }),
+                                return GestureDetector(
+                                  onTap: () {
+                                    _updateListItem();
+                                  },
+                                  child: const PrimaryButtonSkin(
+                                    title: 'Update',
+                                    internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                                  ),
+                                );
+                              },
                             ),
                           ),
-                        )
+                        ),
+                        if (!widget.isLatestList)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15),
+                            child: Column(
+                              children: [
+                                BlocListener<MoveItemToLatestListCubit, DataPayloadState>(
+                                  bloc: _moveToLatestCubit,
+                                  listener: (context, state) {
+                                    if (state is ErrorState) {
+                                      MessageUtils.showSnackBarOverBarrier(context, state.errorMessage,
+                                          isErrorMessage: true);
+                                    } else if (state is SuccessState) {
+                                      Navigator.pop(context);
+                                      MessageUtils.showSnackBarOverBarrier(
+                                          context, 'Item moved to latest shopping list successfully');
+                                    }
+                                  },
+                                  child: BlocBuilder<MoveItemToLatestListCubit, DataPayloadState>(
+                                      bloc: _moveToLatestCubit,
+                                      builder: (context, state) {
+                                        return InkWell(
+                                          onTap: () => _moveItemToLatestShoppingList(),
+                                          borderRadius: BorderRadius.circular(5),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  '${state is RequestingState ? 'Moving' : 'Move'} to latest\nshopping list',
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    color: AppColors.darkBlue1,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 9),
+                                                SvgPicture.asset(Assets.moveToListIcon, width: 25, height: 25),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                ),
+                                Text(
+                                  'You can edit item details\nwhen moving to latest list',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.black.withOpacity(0.55),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: const SecondaryButtonSkin(
+                              title: 'Cancel',
+                              internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                )
-              : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        Assets.deleteIconWhite,
-                        width: 51,
-                        height: 51,
-                        colorFilter: const ColorFilter.mode(AppColors.darkBlue1, BlendMode.srcIn),
-                      ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        'Are you sure you want\nto delete this\nitem?',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 22,
-                          color: Colors.black,
+                ),
+              ),
+            )
+          : Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              child: Wrap(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          Assets.deleteIconWhite,
+                          width: 51,
+                          height: 51,
+                          colorFilter: const ColorFilter.mode(AppColors.darkBlue1, BlendMode.srcIn),
                         ),
-                      ),
-                      const SizedBox(height: 35),
-                      BlocProvider<DeleteListItemCubit>(
-                        create: (context) => _deleteCubit,
-                        child: BlocListener<DeleteListItemCubit, DataPayloadState>(
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Are you sure you want\nto delete this\nitem?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 22,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 35),
+                        BlocListener<DeleteListItemCubit, DataPayloadState>(
                           listener: (context, state) {
                             if (state is ErrorState) {
                               MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
                             } else if (state is SuccessState) {
                               Navigator.pop(context);
-                              MessageUtils.showSnackBarOverBarrier(context, 'Shopping list deleted successfully');
+                              MessageUtils.showSnackBarOverBarrier(context, 'Item deleted successfully');
                             }
                           },
                           child: BlocBuilder<DeleteListItemCubit, DataPayloadState>(
@@ -286,28 +366,39 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
                             },
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 9),
-                      GestureDetector(
-                        onTap: () => setState(() {
-                          _isEditMode = true;
-                        }),
-                        child: const SecondaryButtonSkin(
-                          title: 'No',
-                          internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                        const SizedBox(height: 9),
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            _isEditMode = true;
+                          }),
+                          child: const SecondaryButtonSkin(
+                            title: 'No',
+                            internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-        ],
-      ),
+                ],
+              ),
+            ),
     );
   }
 
   void _updateListItem() {
     if (_formKey.currentState!.validate()) {
       _updateCubit.updateListItem(
+        title: _titleController.text,
+        amount: int.tryParse(_amountController.text) ?? 0,
+        unitOfMeasure: _selectedUOM,
+        existingData: widget.selectedItem,
+      );
+    }
+  }
+
+  void _moveItemToLatestShoppingList() {
+    if (_formKey.currentState!.validate()) {
+      _moveToLatestCubit.moveToLatest(
         title: _titleController.text,
         amount: int.tryParse(_amountController.text) ?? 0,
         unitOfMeasure: _selectedUOM,

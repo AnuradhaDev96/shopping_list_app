@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../domain/enums/list_item_status_enum.dart';
+import '../../../../domain/models/list_item_dto.dart';
 import '../../../../domain/models/shopping_list_dto.dart';
 import '../../../../utils/constants/app_colors.dart';
+import '../../../cubits/shopping_list_bloc.dart';
 
 class LatestShoppingListCard extends StatelessWidget {
   const LatestShoppingListCard({super.key, required this.data});
+
   final ShoppingListDto data;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 15),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.27),
-              offset: const Offset(0, 4),
-              blurRadius: 4,
-              spreadRadius: 0,
-            ),
-          ]
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.27),
+          offset: const Offset(0, 4),
+          blurRadius: 4,
+          spreadRadius: 0,
+        ),
+      ]),
       child: Column(
         children: [
           Align(
@@ -50,109 +51,141 @@ class LatestShoppingListCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 25),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Container(
-                  padding: const EdgeInsets.only(bottom: 6, top: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.darkBlue1,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Center(
-                    child: Column(
+          StreamBuilder<List<ListItemDto>>(
+              stream: GetIt.instance<ShoppingListBloc>().listItemsStream,
+              builder: (context, snapshot) {
+                int remainingItems = 0;
+                int inBagItems = 0;
+                int notInShopItems = 0;
+                int totalItems = 0;
+
+                if (snapshot.hasData) {
+                  var listData = snapshot.data;
+                  if (listData != null && listData.isNotEmpty) {
+                    var itemsOfSelectedShoppingList =
+                        listData.where((element) => element.listId == data.listId).toList();
+
+                    remainingItems = itemsOfSelectedShoppingList
+                        .where((element) => element.status == ListItemStatusEnum.remaining)
+                        .toList()
+                        .length;
+
+                    inBagItems = itemsOfSelectedShoppingList
+                        .where((element) => element.status == ListItemStatusEnum.inBag)
+                        .toList()
+                        .length;
+
+                    notInShopItems = itemsOfSelectedShoppingList
+                        .where((element) => element.status == ListItemStatusEnum.notInShop)
+                        .toList()
+                        .length;
+
+                    totalItems = itemsOfSelectedShoppingList.length;
+                  }
+                }
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(bottom: 6, top: 4, left: 6, right: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.darkBlue1,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '$remainingItems',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const Text(
+                              'remaining',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // const SizedBox(width: 25),
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          '19',
-                          style: TextStyle(
-                            color: Colors.white,
+                          '$inBagItems',
+                          style: const TextStyle(
+                            color: Colors.black,
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
                           ),
                         ),
-                        Text(
-                          'remaining',
+                        const Text(
+                          'in bag',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.black,
                             fontWeight: FontWeight.normal,
                             fontSize: 14,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 25),
-              const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '12',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+                    // const SizedBox(width: 25),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '$notInShopItems',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const Text(
+                          'not in shop',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  Text(
-                    'in bag',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 14,
+                    // const SizedBox(width: 25),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '$totalItems',
+                          style: const TextStyle(
+                            color: AppColors.green3,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const Text(
+                          'total',
+                          style: TextStyle(
+                            color: AppColors.green3,
+                            fontWeight: FontWeight.normal,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 25),
-              const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '1',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    'not in shop',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 25),
-              const Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '32',
-                    style: TextStyle(
-                      color: AppColors.green3,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Text(
-                    'total',
-                    style: TextStyle(
-                      color: AppColors.green3,
-                      fontWeight: FontWeight.normal,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+                  ],
+                );
+              }),
         ],
       ),
     );

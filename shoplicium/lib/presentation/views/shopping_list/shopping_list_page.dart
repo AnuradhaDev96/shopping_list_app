@@ -58,7 +58,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                 );
               } else {
                 return Padding(
-                  padding: const EdgeInsets.only(top: 20, left: 25, right: 25),
+                  padding: const EdgeInsets.only(top:5, left: 25, right: 25),
                   child: CustomScrollView(
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _scrollController,
@@ -71,13 +71,14 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                       ),
                       SliverToBoxAdapter(
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 30),
+                          padding: const EdgeInsets.only(top: 10, bottom: 20),
                           child: GestureDetector(
                             onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ListItemsPage(
                                   selectedList: listData.first,
+                                  isLatestList: true,
                                 ),
                               ),
                             ),
@@ -97,7 +98,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                       listData.length == 1
                           ? SliverToBoxAdapter(
                               child: Padding(
-                                padding: const EdgeInsets.only(top: 60),
+                                padding: EdgeInsets.only(top: MediaQuery.sizeOf(context).width * 0.1),
                                 child: ListErrorWidget(
                                   caption: 'No more shopping lists !',
                                   actionButton: _createNewListButton(context),

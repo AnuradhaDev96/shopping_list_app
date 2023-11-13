@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import '../../../config/themes/text_styles.dart';
 import '../../../domain/models/list_item_dto.dart';
 import '../../../domain/models/shopping_list_dto.dart';
+import '../../../utils/constants/app_colors.dart';
 import '../../../utils/constants/assets.dart';
 import '../../cubits/shopping_list_bloc.dart';
 import '../../widgets/list_error_widget.dart';
@@ -18,9 +19,10 @@ import 'widgets/update_list_item_dialog.dart';
 import 'widgets/update_shopping_list_dialog.dart';
 
 class ListItemsPage extends StatefulWidget {
-  const ListItemsPage({super.key, required this.selectedList});
+  const ListItemsPage({super.key, required this.selectedList, this.isLatestList = false});
 
   final ShoppingListDto selectedList;
+  final bool isLatestList;
 
   @override
   State<ListItemsPage> createState() => _ListItemsPageState();
@@ -30,9 +32,15 @@ class _ListItemsPageState extends State<ListItemsPage> {
   final _scrollController = ScrollController();
 
   ListItemFilterEnum _selectedFilter = ListItemFilterEnum.remaining;
+  ListItemFilterEnum _filterCache = ListItemFilterEnum.remaining;
+
+  OverlayEntry? _overlayEntry;
+  final _helpIconKey = GlobalKey(debugLabel: 'helpIconKey');
 
   @override
   Widget build(BuildContext context) {
+    final displayFilters = ListItemFilterEnum.values.where((element) => element != ListItemFilterEnum.inBag).toList();
+
     return ScaffoldDecoration(
       child: Scaffold(
         appBar: AppBar(
@@ -51,7 +59,20 @@ class _ListItemsPageState extends State<ListItemsPage> {
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 15),
-              child: SvgPicture.asset(Assets.showBagIcon, width: 41, height: 45),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() {
+                  if (_selectedFilter != ListItemFilterEnum.inBag) {
+                    _filterCache = _selectedFilter;
+                    _selectedFilter = ListItemFilterEnum.inBag;
+                  } else {
+                    _selectedFilter = _filterCache;
+                  }
+                }),
+                child: _selectedFilter == ListItemFilterEnum.inBag
+                    ? SvgPicture.asset(Assets.openBagIcon, width: 41, height: 52)
+                    : SvgPicture.asset(Assets.showBagIcon, width: 41, height: 45),
+              ),
             ),
           ],
         ),
@@ -89,7 +110,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
                   );
                 } else {
                   return Padding(
-                    padding: const EdgeInsets.only(top: 23, left: 25, right: 25),
+                    padding: const EdgeInsets.only(top: 15, left: 25, right: 25),
                     child: CustomScrollView(
                       physics: const NeverScrollableScrollPhysics(),
                       controller: _scrollController,
@@ -99,11 +120,12 @@ class _ListItemsPageState extends State<ListItemsPage> {
                             height: 55,
                             child: Center(
                               child: ListView.separated(
-                                physics: const NeverScrollableScrollPhysics(),
+                                physics: const ClampingScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
+                                padding: const EdgeInsets.symmetric(horizontal: 5),
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
-                                  var filterItem = ListItemFilterEnum.values[index];
+                                  var filterItem = displayFilters[index];
                                   bool isSelected = filterItem == _selectedFilter;
 
                                   return GestureDetector(
@@ -141,7 +163,7 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                   );
                                 },
                                 separatorBuilder: (context, index) => const SizedBox(width: 25),
-                                itemCount: ListItemFilterEnum.values.length,
+                                itemCount: displayFilters.length,
                               ),
                             ),
                           ),
@@ -157,10 +179,15 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                     style: TextStyles.sectionTitleTextStyle,
                                   ),
                                   const SizedBox(width: 7),
-                                  SvgPicture.asset(
-                                    Assets.helpIcon,
-                                    width: 26,
-                                    height: 26,
+                                  GestureDetector(
+                                    key: _helpIconKey,
+                                    behavior: HitTestBehavior.opaque,
+                                    onTap: () => _createHelpGuideOverlay(),
+                                    child: SvgPicture.asset(
+                                      Assets.helpIcon,
+                                      width: 26,
+                                      height: 26,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -187,10 +214,13 @@ class _ListItemsPageState extends State<ListItemsPage> {
                                 var listItemData = _getFilteredListItems(itemsOfSelectedShoppingList)[index];
                                 return GestureDetector(
                                   onTap: () {
-                                    showDialog(
+                                    showGeneralDialog(
                                       context: context,
-                                      builder: (dialogContext) {
-                                        return UpdateListItemDialog(selectedItem: listItemData);
+                                      pageBuilder: (dialogContext, animation, secondaryAnimation) {
+                                        return UpdateListItemDialog(
+                                          selectedItem: listItemData,
+                                          isLatestList: widget.isLatestList,
+                                        );
                                       },
                                     );
                                   },
@@ -283,8 +313,142 @@ class _ListItemsPageState extends State<ListItemsPage> {
         return itemsOfShoppingList;
       case ListItemFilterEnum.remaining:
       case ListItemFilterEnum.notInShop:
+      case ListItemFilterEnum.inBag:
         return itemsOfShoppingList.where((element) => element.status.dtoValue == _selectedFilter.statusValue).toList();
     }
+  }
+
+  void _createHelpGuideOverlay() {
+    final RenderBox renderBox = _helpIconKey.currentContext!.findRenderObject() as RenderBox;
+    final buttonPosition = renderBox.localToGlobal(Offset.zero);
+    final overlayPosition = Offset(buttonPosition.dx, buttonPosition.dy);
+
+    _removeHelpGuideOverlay();
+    assert(_overlayEntry == null);
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return GestureDetector(
+          onTap: () => _removeHelpGuideOverlay(),
+          child: Material(
+            color: Colors.black.withOpacity(0.55),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: overlayPosition.dy,
+                  left: overlayPosition.dx,
+                  child: SvgPicture.asset(
+                    Assets.helpIcon,
+                    width: 26,
+                    height: 26,
+                  ),
+                ),
+                Positioned(
+                  top: overlayPosition.dy + 36,
+                  right: 0,
+                  left: 0,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 30, bottom: 37),
+                    margin: const EdgeInsets.only(left: 25, right: 25),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkBlue2,
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        width: 3,
+                        color: const Color(0xFFBDBDBD),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: const TextSpan(
+                            style: TextStyle(
+                              fontFamily: TextStyles.defaultFontFamily,
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 18,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Tap on shopping item to\n',
+                              ),
+                              TextSpan(
+                                text: 'edit, delete ',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'or\n',
+                              ),
+                              TextSpan(
+                                text: 'move to latest shopping list.',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 33),
+                        RichText(
+                          textAlign: TextAlign.center,
+                          text: const TextSpan(
+                            style: TextStyle(
+                              fontFamily: TextStyles.defaultFontFamily,
+                              color: Colors.white,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 18,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Tap on action buttons to move\nitem ',
+                              ),
+                              TextSpan(
+                                text: '“to bag” ',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'or\n mark as ',
+                              ),
+                              TextSpan(
+                                text: '“not in shop”',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    Overlay.of(context, debugRequiredFor: widget).insert(_overlayEntry!);
+  }
+
+  void _removeHelpGuideOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 }
 
@@ -293,7 +457,8 @@ enum ListItemFilterEnum {
   notInShop(statusValue: 3, text: "Not in shop", counterText: 'not found'),
 
   /// [all] does not have a status value in table
-  all(statusValue: 0, text: "All items", counterText: 'total');
+  all(statusValue: 0, text: "All items", counterText: 'total'),
+  inBag(statusValue: 2, text: "In bag", counterText: 'in the bag');
 
   final int statusValue;
   final String text;

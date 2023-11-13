@@ -1,4 +1,4 @@
-package com.example.shoplicium
+package com.meteorshow.shoplicium
 
 import io.flutter.embedding.android.FlutterActivity
 
