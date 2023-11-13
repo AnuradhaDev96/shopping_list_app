@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../config/themes/input_decorations.dart';
+import '../../../../config/themes/text_styles.dart';
 import '../../../../domain/enums/unit_of_measure_enum.dart';
 import '../../../../utils/constants/app_colors.dart';
 import '../../../../utils/resources/message_utils.dart';
@@ -75,6 +76,7 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
 
                       return null;
                     },
+                    style: TextStyles.textFieldInputTextStyle,
                     decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Cheese'),
                   ),
                   const SizedBox(height: 22),
@@ -104,6 +106,7 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
 
                       return null;
                     },
+                    style: TextStyles.textFieldInputTextStyle,
                     decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: 50'),
                   ),
                   const SizedBox(height: 22),

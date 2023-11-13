@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../config/themes/input_decorations.dart';
+import '../../../../config/themes/text_styles.dart';
 import '../../../../domain/enums/unit_of_measure_enum.dart';
 import '../../../../domain/models/list_item_dto.dart';
 import '../../../../utils/constants/app_colors.dart';
@@ -120,6 +121,7 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
 
                             return null;
                           },
+                          style: TextStyles.textFieldInputTextStyle,
                           decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Cheese'),
                         ),
                         const SizedBox(height: 22),
@@ -149,6 +151,7 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
 
                             return null;
                           },
+                          style: TextStyles.textFieldInputTextStyle,
                           decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: 50'),
                         ),
                         const SizedBox(height: 22),

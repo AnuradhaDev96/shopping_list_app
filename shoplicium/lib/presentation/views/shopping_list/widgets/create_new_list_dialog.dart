@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../../../config/themes/input_decorations.dart';
+import '../../../../config/themes/text_styles.dart';
 import '../../../../utils/resources/message_utils.dart';
 import '../../../cubits/shopping_list/create_new_list_cubit.dart';
 import '../../../states/data_payload_state.dart';
@@ -74,6 +75,7 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
 
                       return null;
                     },
+                    style: TextStyles.textFieldInputTextStyle,
                     decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Awesome shopping'),
                   ),
                   const SizedBox(height: 22),
@@ -100,6 +102,7 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
 
                       return null;
                     },
+                    style: TextStyles.textFieldInputTextStyle,
                     decoration: InputDecorations.outlinedInputDecoration(hintText: 'Tap to select date'),
                   ),
                   Padding(
