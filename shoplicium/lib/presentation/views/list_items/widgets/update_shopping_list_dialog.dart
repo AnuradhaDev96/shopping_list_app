@@ -45,117 +45,122 @@ class _UpdateShoppingListDialogState extends State<UpdateShoppingListDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
-      child: Wrap(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 23),
-                    child: Text(
-                      'Edit shopping list',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+      child: FractionallySizedBox(
+        heightFactor: 0.67,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 23),
+                        child: Text(
+                          'Edit shopping list',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Title',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Title',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: _titleController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Title is required';
-                      }
-
-                      return null;
-                    },
-                    style: TextStyles.textFieldInputTextStyle,
-                    decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Awesome shopping'),
-                  ),
-                  const SizedBox(height: 22),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Shopping date',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  TextFormField(
-                    controller: _dateController,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    readOnly: true,
-                    onTap: () => showDatePickerDialog(context),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Date is required';
-                      }
-
-                      return null;
-                    },
-                    style: TextStyles.textFieldInputTextStyle,
-                    decoration: InputDecorations.outlinedInputDecoration(hintText: 'Tap to select date'),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: MediaQuery.sizeOf(context).width * 0.14),
-                    child: BlocProvider<UpdateShoppingListCubit>(
-                      create: (context) => _updateCubit,
-                      child: BlocListener(
-                        bloc: _updateCubit,
-                        listener: (context, state) {
-                          if (state is ErrorState) {
-                            MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
-                          } else if (state is SuccessState) {
-                            int pagesToPop = 2;
-                            Navigator.popUntil(context, (route) {
-                              return pagesToPop-- == 0;
-                            });
-                            MessageUtils.showSnackBarOverBarrier(context, 'Shopping list updated successfully');
+                      TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _titleController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Title is required';
                           }
-                        },
-                        child: BlocBuilder<UpdateShoppingListCubit, DataPayloadState>(
-                            bloc: _updateCubit,
-                            builder: (context, state) {
-                              if (state is RequestingState) {
-                                return const CupertinoActivityIndicator();
-                              }
 
-                              return GestureDetector(
-                                onTap: () {
-                                  _updateShoppingList();
-                                },
-                                child: const PrimaryButtonSkin(
-                                  title: 'Update',
-                                ),
-                              );
-                            }),
+                          return null;
+                        },
+                        style: TextStyles.textFieldInputTextStyle,
+                        decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Awesome shopping'),
                       ),
-                    ),
-                  )
-                ],
+                      const SizedBox(height: 22),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Shopping date',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        controller: _dateController,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        readOnly: true,
+                        onTap: () => showDatePickerDialog(context),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Date is required';
+                          }
+
+                          return null;
+                        },
+                        style: TextStyles.textFieldInputTextStyle,
+                        decoration: InputDecorations.outlinedInputDecoration(hintText: 'Tap to select date'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: MediaQuery.sizeOf(context).width * 0.14),
+                        child: BlocProvider<UpdateShoppingListCubit>(
+                          create: (context) => _updateCubit,
+                          child: BlocListener(
+                            bloc: _updateCubit,
+                            listener: (context, state) {
+                              if (state is ErrorState) {
+                                MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
+                              } else if (state is SuccessState) {
+                                int pagesToPop = 2;
+                                Navigator.popUntil(context, (route) {
+                                  return pagesToPop-- == 0;
+                                });
+                                MessageUtils.showSnackBarOverBarrier(context, 'Shopping list updated successfully');
+                              }
+                            },
+                            child: BlocBuilder<UpdateShoppingListCubit, DataPayloadState>(
+                                bloc: _updateCubit,
+                                builder: (context, state) {
+                                  if (state is RequestingState) {
+                                    return const CupertinoActivityIndicator();
+                                  }
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      _updateShoppingList();
+                                    },
+                                    child: const PrimaryButtonSkin(
+                                      title: 'Update',
+                                    ),
+                                  );
+                                }),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
