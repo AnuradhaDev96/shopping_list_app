@@ -18,6 +18,8 @@ abstract class TextStyles {
     color: Colors.white,
   );
 
+  static const textFieldInputTextStyle = TextStyle(fontSize: 18, fontWeight: FontWeight.w500);
+
   static const textFieldHintStyle = TextStyle(
     color: AppColors.grey1,
     fontSize: 18.0,
