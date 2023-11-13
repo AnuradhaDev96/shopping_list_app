@@ -36,173 +36,178 @@ class _CreateListItemDialogState extends State<CreateListItemDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
-      child: Wrap(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 23),
-                    child: Text(
-                      'Create shopping item',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+      child: FractionallySizedBox(
+        heightFactor: 0.85,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
+          child: CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 23),
+                        child: Text(
+                          'Create shopping item',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Title',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Title',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: _titleController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Title is required';
-                      }
+                      TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _titleController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Title is required';
+                          }
 
-                      return null;
-                    },
-                    style: TextStyles.textFieldInputTextStyle,
-                    decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Cheese'),
-                  ),
-                  const SizedBox(height: 22),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Amount',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                          return null;
+                        },
+                        style: TextStyles.textFieldInputTextStyle,
+                        decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Cheese'),
                       ),
-                    ),
-                  ),
-                  TextFormField(
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    controller: _amountController,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      LengthLimitingTextInputFormatter(10),
-                      FilteringTextInputFormatter.digitsOnly,
-                    ],
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Amount is required';
-                      }
+                      const SizedBox(height: 22),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Amount',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      TextFormField(
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        controller: _amountController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(10),
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Amount is required';
+                          }
 
-                      return null;
-                    },
-                    style: TextStyles.textFieldInputTextStyle,
-                    decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: 50'),
-                  ),
-                  const SizedBox(height: 22),
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Unit of measure',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
+                          return null;
+                        },
+                        style: TextStyles.textFieldInputTextStyle,
+                        decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: 50'),
                       ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 62,
-                    child: ButtonTheme(
-                      alignedDropdown: true,
-                      child: DropdownButtonFormField<UnitOfMeasureEnum>(
-                        value: _selectedUOM,
-                        items: UnitOfMeasureEnum.values
-                            .map(
-                              (item) => DropdownMenuItem<UnitOfMeasureEnum>(
-                                value: item,
-                                child: Text(
-                                  '${item.text} (${item.symbol})',
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 18,
+                      const SizedBox(height: 22),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Unit of measure',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 62,
+                        child: ButtonTheme(
+                          alignedDropdown: true,
+                          child: DropdownButtonFormField<UnitOfMeasureEnum>(
+                            value: _selectedUOM,
+                            items: UnitOfMeasureEnum.values
+                                .map(
+                                  (item) => DropdownMenuItem<UnitOfMeasureEnum>(
+                                    value: item,
+                                    child: Text(
+                                      '${item.text} (${item.symbol})',
+                                      textAlign: TextAlign.left,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 18,
+                                      ),
+                                    ),
                                   ),
-                                ),
-                              ),
-                            )
-                            .toList(),
-                        dropdownColor: AppColors.blue1,
-                        decoration: InputDecoration(
-                            filled: true,
-                            fillColor: AppColors.blue1,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
-                        borderRadius: BorderRadius.circular(8),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
+                                )
+                                .toList(),
+                            dropdownColor: AppColors.blue1,
+                            decoration: InputDecoration(
+                                filled: true,
+                                fillColor: AppColors.blue1,
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+                            borderRadius: BorderRadius.circular(8),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 18,
+                            ),
+                            enableFeedback: true,
+                            iconEnabledColor: Colors.white,
+                            iconSize: 30,
+                            onChanged: (UnitOfMeasureEnum? value) {
+                              _selectedUOM = value ?? UnitOfMeasureEnum.kg;
+                            },
+                          ),
                         ),
-                        enableFeedback: true,
-                        iconEnabledColor: Colors.white,
-                        iconSize: 30,
-                        onChanged: (UnitOfMeasureEnum? value) {
-                          _selectedUOM = value ?? UnitOfMeasureEnum.kg;
-                        },
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 50),
-                    child: BlocProvider<CreateListItemCubit>(
-                      create: (context) => _createListItemCubit,
-                      child: BlocListener<CreateListItemCubit, DataPayloadState>(
-                        bloc: _createListItemCubit,
-                        listener: (context, state) {
-                          if (state is ErrorState) {
-                            MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
-                          } else if (state is SuccessState) {
-                            Navigator.pop(context);
-                            MessageUtils.showSnackBarOverBarrier(context, 'Item saved successfully');
-                          }
-                        },
-                        child: BlocBuilder<CreateListItemCubit, DataPayloadState>(
-                          bloc: _createListItemCubit,
-                          builder: (context, state) {
-                            if (state is RequestingState) {
-                              return const CupertinoActivityIndicator();
-                            }
+                      Padding(
+                        padding: const EdgeInsets.only(top: 50),
+                        child: BlocProvider<CreateListItemCubit>(
+                          create: (context) => _createListItemCubit,
+                          child: BlocListener<CreateListItemCubit, DataPayloadState>(
+                            bloc: _createListItemCubit,
+                            listener: (context, state) {
+                              if (state is ErrorState) {
+                                MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
+                              } else if (state is SuccessState) {
+                                Navigator.pop(context);
+                                MessageUtils.showSnackBarOverBarrier(context, 'Item saved successfully');
+                              }
+                            },
+                            child: BlocBuilder<CreateListItemCubit, DataPayloadState>(
+                              bloc: _createListItemCubit,
+                              builder: (context, state) {
+                                if (state is RequestingState) {
+                                  return const CupertinoActivityIndicator();
+                                }
 
-                            return GestureDetector(
-                              onTap: () {
-                                _saveItemToShoppingList();
-                              },
-                              child: const PrimaryButtonSkin(
-                                title: 'Save',
-                                internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
-                              ),
-                            );
-                          }
+                                return GestureDetector(
+                                  onTap: () {
+                                    _saveItemToShoppingList();
+                                  },
+                                  child: const PrimaryButtonSkin(
+                                    title: 'Save',
+                                    internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                                  ),
+                                );
+                              }
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  )
-                ],
+                      )
+                    ],
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

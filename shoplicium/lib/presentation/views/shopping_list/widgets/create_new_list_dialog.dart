@@ -38,7 +38,6 @@ class _CreateNewListDialogState extends State<CreateNewListDialog> {
       child: FractionallySizedBox(
         heightFactor: 0.67,
         child: Padding(
-          // heightFactor: 0.8,
           padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
           child: CustomScrollView(
             slivers: [
