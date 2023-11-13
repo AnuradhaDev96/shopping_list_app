@@ -50,172 +50,305 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 35),
-      child: Material(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        color: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        child: _isEditMode
-            ? SingleChildScrollView(
-          padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 23),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Edit shopping item',
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<UpdateListItemCubit>(create: (context) => _updateCubit),
+        BlocProvider<DeleteListItemCubit>(create: (context) => _deleteCubit),
+        BlocProvider<MoveItemToLatestListCubit>(create: (context) => _moveToLatestCubit),
+      ],
+      child: _isEditMode
+          ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 35),
+              child: Material(
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: Colors.white,
+                surfaceTintColor: Colors.transparent,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(top: 26, bottom: 31, left: 20, right: 20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 23),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Edit shopping item',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              GestureDetector(
+                                behavior: HitTestBehavior.opaque,
+                                onTap: () {
+                                  setState(() {
+                                    _isEditMode = false;
+                                  });
+                                },
+                                child: SvgPicture.asset(
+                                  Assets.deleteIconWhite,
+                                  width: 27,
+                                  height: 27,
+                                  colorFilter: const ColorFilter.mode(AppColors.darkBlue1, BlendMode.srcIn),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Title',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                          GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTap: () {
-                              setState(() {
-                                _isEditMode = false;
-                              });
-                            },
-                            child: SvgPicture.asset(
-                              Assets.deleteIconWhite,
-                              width: 27,
-                              height: 27,
-                              colorFilter: const ColorFilter.mode(AppColors.darkBlue1, BlendMode.srcIn),
+                        ),
+                        TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          controller: _titleController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Title is required';
+                            }
+
+                            return null;
+                          },
+                          decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Cheese'),
+                        ),
+                        const SizedBox(height: 22),
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Amount',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Title',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
                         ),
-                      ),
-                    ),
-                    TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      controller: _titleController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Title is required';
-                        }
+                        TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                          controller: _amountController,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(10),
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Amount is required';
+                            }
 
-                        return null;
-                      },
-                      decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: Cheese'),
-                    ),
-                    const SizedBox(height: 22),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Amount',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+                            return null;
+                          },
+                          decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: 50'),
                         ),
-                      ),
-                    ),
-                    TextFormField(
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      controller: _amountController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(10),
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Amount is required';
-                        }
-
-                        return null;
-                      },
-                      decoration: InputDecorations.outlinedInputDecoration(hintText: 'ex: 50'),
-                    ),
-                    const SizedBox(height: 22),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Unit of measure',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+                        const SizedBox(height: 22),
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Unit of measure',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 62,
-                      child: ButtonTheme(
-                        alignedDropdown: true,
-                        child: DropdownButtonFormField<UnitOfMeasureEnum>(
-                          value: _selectedUOM,
-                          items: UnitOfMeasureEnum.values
-                              .map(
-                                (item) => DropdownMenuItem<UnitOfMeasureEnum>(
-                                  value: item,
-                                  child: Text(
-                                    '${item.text} (${item.symbol})',
-                                    textAlign: TextAlign.left,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 18,
+                        SizedBox(
+                          height: 62,
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButtonFormField<UnitOfMeasureEnum>(
+                              value: _selectedUOM,
+                              items: UnitOfMeasureEnum.values
+                                  .map(
+                                    (item) => DropdownMenuItem<UnitOfMeasureEnum>(
+                                      value: item,
+                                      child: Text(
+                                        '${item.text} (${item.symbol})',
+                                        textAlign: TextAlign.left,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 18,
+                                        ),
+                                      ),
                                     ),
+                                  )
+                                  .toList(),
+                              dropdownColor: AppColors.blue1,
+                              decoration: InputDecoration(
+                                  filled: true,
+                                  fillColor: AppColors.blue1,
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
+                              borderRadius: BorderRadius.circular(8),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 18,
+                              ),
+                              enableFeedback: true,
+                              iconEnabledColor: Colors.white,
+                              iconSize: 30,
+                              onChanged: (UnitOfMeasureEnum? value) {
+                                _selectedUOM = value ?? UnitOfMeasureEnum.kg;
+                              },
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 50),
+                          child: BlocListener<UpdateListItemCubit, DataPayloadState>(
+                            bloc: _updateCubit,
+                            listener: (context, state) {
+                              if (state is ErrorState) {
+                                MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
+                              } else if (state is SuccessState) {
+                                Navigator.pop(context);
+                                MessageUtils.showSnackBarOverBarrier(context, 'Item updated successfully');
+                              }
+                            },
+                            child: BlocBuilder<UpdateListItemCubit, DataPayloadState>(
+                              bloc: _updateCubit,
+                              builder: (context, state) {
+                                if (state is RequestingState) {
+                                  return const CupertinoActivityIndicator();
+                                }
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    _updateListItem();
+                                  },
+                                  child: const PrimaryButtonSkin(
+                                    title: 'Update',
+                                    internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                        if (!widget.isLatestList)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15),
+                            child: Column(
+                              children: [
+                                BlocListener<MoveItemToLatestListCubit, DataPayloadState>(
+                                  bloc: _moveToLatestCubit,
+                                  listener: (context, state) {
+                                    if (state is ErrorState) {
+                                      MessageUtils.showSnackBarOverBarrier(context, state.errorMessage,
+                                          isErrorMessage: true);
+                                    } else if (state is SuccessState) {
+                                      Navigator.pop(context);
+                                      MessageUtils.showSnackBarOverBarrier(
+                                          context, 'Item moved to latest shopping list successfully');
+                                    }
+                                  },
+                                  child: BlocBuilder<MoveItemToLatestListCubit, DataPayloadState>(
+                                      bloc: _moveToLatestCubit,
+                                      builder: (context, state) {
+                                        return InkWell(
+                                          onTap: () => _moveItemToLatestShoppingList(),
+                                          borderRadius: BorderRadius.circular(5),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  '${state is RequestingState ? 'Moving' : 'Move'} to latest\nshopping list',
+                                                  textAlign: TextAlign.center,
+                                                  style: const TextStyle(
+                                                    color: AppColors.darkBlue1,
+                                                    fontWeight: FontWeight.w600,
+                                                    fontSize: 18,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 9),
+                                                SvgPicture.asset(Assets.moveToListIcon, width: 25, height: 25),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }),
+                                ),
+                                Text(
+                                  'You can edit item details\nwhen moving to latest list',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.black.withOpacity(0.55),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              )
-                              .toList(),
-                          dropdownColor: AppColors.blue1,
-                          decoration: InputDecoration(
-                              filled: true,
-                              fillColor: AppColors.blue1,
-                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
-                          borderRadius: BorderRadius.circular(8),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18,
+                              ],
+                            ),
                           ),
-                          enableFeedback: true,
-                          iconEnabledColor: Colors.white,
-                          iconSize: 30,
-                          onChanged: (UnitOfMeasureEnum? value) {
-                            _selectedUOM = value ?? UnitOfMeasureEnum.kg;
-                          },
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: const SecondaryButtonSkin(
+                              title: 'Cancel',
+                              internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 50),
-                      child: BlocProvider<UpdateListItemCubit>(
-                        create: (context) => _updateCubit,
-                        child: BlocListener<UpdateListItemCubit, DataPayloadState>(
-                          bloc: _updateCubit,
+                  ),
+                ),
+              ),
+            )
+          : Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              child: Wrap(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          Assets.deleteIconWhite,
+                          width: 51,
+                          height: 51,
+                          colorFilter: const ColorFilter.mode(AppColors.darkBlue1, BlendMode.srcIn),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Are you sure you want\nto delete this\nitem?',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 22,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 35),
+                        BlocListener<DeleteListItemCubit, DataPayloadState>(
                           listener: (context, state) {
                             if (state is ErrorState) {
-                              MessageUtils.showSnackBarOverBarrier(context, state.errorMessage,
-                                  isErrorMessage: true);
+                              MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
                             } else if (state is SuccessState) {
                               Navigator.pop(context);
-                              MessageUtils.showSnackBarOverBarrier(context, 'Item updated successfully');
+                              MessageUtils.showSnackBarOverBarrier(context, 'Item deleted successfully');
                             }
                           },
-                          child: BlocBuilder<UpdateListItemCubit, DataPayloadState>(
-                            bloc: _updateCubit,
+                          child: BlocBuilder<DeleteListItemCubit, DataPayloadState>(
                             builder: (context, state) {
                               if (state is RequestingState) {
                                 return const CupertinoActivityIndicator();
@@ -223,159 +356,32 @@ class _UpdateListItemDialogState extends State<UpdateListItemDialog> {
 
                               return GestureDetector(
                                 onTap: () {
-                                  _updateListItem();
+                                  _deleteCubit.deleteListItem(widget.selectedItem.itemId);
                                 },
                                 child: const PrimaryButtonSkin(
-                                  title: 'Update',
+                                  title: 'Yes',
                                   internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
                                 ),
                               );
                             },
                           ),
                         ),
-                      ),
-                    ),
-                    if (!widget.isLatestList)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: Column(
-                          children: [
-                            BlocProvider<MoveItemToLatestListCubit>(
-                              create: (context) => _moveToLatestCubit,
-                              child: BlocListener<MoveItemToLatestListCubit, DataPayloadState>(
-                                bloc: _moveToLatestCubit,
-                                listener: (context, state) {
-                                  if (state is ErrorState) {
-                                    MessageUtils.showSnackBarOverBarrier(context, state.errorMessage,
-                                        isErrorMessage: true);
-                                  } else if (state is SuccessState) {
-                                    Navigator.pop(context);
-                                    MessageUtils.showSnackBarOverBarrier(
-                                        context, 'Item moved to latest shopping list successfully');
-                                  }
-                                },
-                                child: BlocBuilder<MoveItemToLatestListCubit, DataPayloadState>(
-                                    bloc: _moveToLatestCubit,
-                                    builder: (context, state) {
-                                      return InkWell(
-                                        onTap: () => _moveItemToLatestShoppingList(),
-                                        borderRadius: BorderRadius.circular(5),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(4.0),
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                '${state is RequestingState ? 'Moving' : 'Move'} to latest\nshopping list',
-                                                textAlign: TextAlign.center,
-                                                style: const TextStyle(
-                                                  color: AppColors.darkBlue1,
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: 18,
-                                                ),
-                                              ),
-                                              const SizedBox(width: 9),
-                                              SvgPicture.asset(Assets.moveToListIcon, width: 25, height: 25),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    }),
-                              ),
-                            ),
-                            Text(
-                              'You can edit item details\nwhen moving to latest list',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.black.withOpacity(0.55),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
+                        const SizedBox(height: 9),
+                        GestureDetector(
+                          onTap: () => setState(() {
+                            _isEditMode = true;
+                          }),
+                          child: const SecondaryButtonSkin(
+                            title: 'No',
+                            internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
+                          ),
                         ),
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: const SecondaryButtonSkin(
-                          title: 'Cancel',
-                          internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            )
-            : Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      Assets.deleteIconWhite,
-                      width: 51,
-                      height: 51,
-                      colorFilter: const ColorFilter.mode(AppColors.darkBlue1, BlendMode.srcIn),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'Are you sure you want\nto delete this\nitem?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 22,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 35),
-                    BlocProvider<DeleteListItemCubit>(
-                      create: (context) => _deleteCubit,
-                      child: BlocListener<DeleteListItemCubit, DataPayloadState>(
-                        listener: (context, state) {
-                          if (state is ErrorState) {
-                            MessageUtils.showSnackBarOverBarrier(context, state.errorMessage, isErrorMessage: true);
-                          } else if (state is SuccessState) {
-                            Navigator.pop(context);
-                            MessageUtils.showSnackBarOverBarrier(context, 'Item deleted successfully');
-                          }
-                        },
-                        child: BlocBuilder<DeleteListItemCubit, DataPayloadState>(
-                          builder: (context, state) {
-                            if (state is RequestingState) {
-                              return const CupertinoActivityIndicator();
-                            }
-
-                            return GestureDetector(
-                              onTap: () {
-                                _deleteCubit.deleteListItem(widget.selectedItem.itemId);
-                              },
-                              child: const PrimaryButtonSkin(
-                                title: 'Yes',
-                                internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 9),
-                    GestureDetector(
-                      onTap: () => setState(() {
-                        _isEditMode = true;
-                      }),
-                      child: const SecondaryButtonSkin(
-                        title: 'No',
-                        internalPadding: EdgeInsets.fromLTRB(80, 8, 80, 10),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-      ),
+            ),
     );
   }
 
