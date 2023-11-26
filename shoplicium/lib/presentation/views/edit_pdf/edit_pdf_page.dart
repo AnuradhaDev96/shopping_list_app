@@ -17,11 +17,62 @@ class EditPdfPage extends StatefulWidget {
 }
 
 class _EditPdfPageState extends State<EditPdfPage> {
+  final _pdfController = PdfViewerController();
+  final PdfFunctions _pdfFunctions = PdfFunctions();
+  final String assetFileName = 'assets/pdf/Cover_letter.pdf';
+
+  PdfDocument? document;
+  Uint8List? fileBytes;
+
   @override
   void initState() {
     super.initState();
 
+    _loadPdfBytes();
+
+    // var x = document!.
+
+    // _pdfController.importFormData(inputBytes, dataFormat)
     // _readPDF();
+  }
+
+  Future<void> _loadPdfBytes() async {
+    try {
+      var bytes = await _pdfFunctions.readDocumentData(assetFileName);
+      setState(() {
+        fileBytes = Uint8List.fromList(bytes);
+        document = PdfDocument(inputBytes: bytes);
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void addAcceptedText() async {
+    if (document != null) {
+      const int pageIndex = 0;
+      final PdfPage page = document!.pages[pageIndex];
+
+      // final PdfTextElement textElement = PdfTextElement(
+      //   text: 'Document Accepted',
+      //   font: PdfStandardFont(PdfFontFamily.helvetica, 20),
+      //   brush: PdfSolidBrush(PdfColor(237, 16, 16)),  // Adjust the coordinates as needed
+      // );
+      var pageSize = page.size;
+      page.graphics.drawString(
+        'Document Accepted',
+        PdfStandardFont(PdfFontFamily.helvetica, 20),
+        brush: PdfSolidBrush(PdfColor(237, 16, 16)),
+        bounds: Rect.fromLTWH(pageSize.width - 200, page.size.height - 100, 200, 50),
+      );
+
+      var newBytes = await document!.save();
+
+      setState(() {
+        fileBytes = Uint8List.fromList(newBytes);
+        document = PdfDocument(inputBytes: newBytes);
+      });
+    }
   }
 
   @override
@@ -48,18 +99,27 @@ class _EditPdfPageState extends State<EditPdfPage> {
           ),
         ),
       ),
-      body: SfPdfViewer.asset('assets/pdf/Cover_letter.pdf'),
+      // body: SfPdfViewer.asset('assets/pdf/Cover_letter.pdf',controller: _pdfController,),
+      body: fileBytes == null
+          ? const Center(child: Text('Loading pdf data'))
+          : SfPdfViewer.memory(
+              fileBytes!,
+              controller: _pdfController,
+            ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           ElevatedButton(
             onPressed: () {},
-            child: const Text("Add Signature PNG"),
+            child: const Text("Add Signature PNG", style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
-            onPressed: () {},
-            child: const Text("Add Accepted Text"),
+            onPressed: () {
+              addAcceptedText();
+            },
+            child: const Text("Add Accepted Text", style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -73,6 +133,11 @@ class PdfFunctions {
     final ByteData data = await rootBundle.load(fileName);
     return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   }
+
+  // Future<List<int>> getDocumentDataAsUIn8List(String fileName) async {
+  //   final ByteData data = await rootBundle.load(fileName);
+  //   return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  // }
 
   // Read PDF and save data to local
   Future<void> readPDF(String fileName) async {
