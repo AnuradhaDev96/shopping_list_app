@@ -30,7 +30,7 @@ class _EditPdfPageState extends State<EditPdfPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leading: IconButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.pop(context);
           },
           icon: const Icon(
@@ -49,9 +49,22 @@ class _EditPdfPageState extends State<EditPdfPage> {
         ),
       ),
       body: SfPdfViewer.asset('assets/pdf/Cover_letter.pdf'),
+      floatingActionButton: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text("Add Signature PNG"),
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text("Add Accepted Text"),
+          ),
+        ],
+      ),
     );
   }
-
 }
 
 class PdfFunctions {
@@ -64,8 +77,7 @@ class PdfFunctions {
   // Read PDF and save data to local
   Future<void> readPDF(String fileName) async {
     //Load the PDF document
-    final PdfDocument document =
-    PdfDocument(inputBytes: await readDocumentData(fileName));
+    final PdfDocument document = PdfDocument(inputBytes: await readDocumentData(fileName));
 
     //Get the pages count
     int count = document.pages.count;
@@ -75,8 +87,8 @@ class PdfFunctions {
 
     for (int i = 1; i <= count; i++) {
       //Draw text to the page
-      document.pages[i - 1].graphics.drawString('Page $i of $count', font,
-          bounds: const Rect.fromLTWH(20, 20, 0, 0), brush: PdfBrushes.red);
+      document.pages[i - 1].graphics
+          .drawString('Page $i of $count', font, bounds: const Rect.fromLTWH(20, 20, 0, 0), brush: PdfBrushes.red);
     }
 
     //Save the document.
@@ -86,11 +98,9 @@ class PdfFunctions {
 
     //Save the file and launch/download.
     saveAndLaunchFile(bytes, 'output.pdf');
-
   }
 
-  Future<void> saveAndLaunchFile(
-      List<int> bytes, String fileName) async {
+  Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
     //Get external storage directory
     Directory directory = await getApplicationSupportDirectory();
     //Get directory path
