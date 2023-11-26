@@ -8,6 +8,7 @@ import '../../cubits/shopping_list_bloc.dart';
 import '../../widgets/list_error_widget.dart';
 import '../../widgets/primary_button_skin.dart';
 import '../../widgets/scaffold_decoration.dart';
+import '../edit_pdf/edit_pdf_page.dart';
 import '../list_items/list_items_page.dart';
 import 'widgets/create_new_list_dialog.dart';
 import 'widgets/latest_shopping_list_card.dart';
@@ -37,7 +38,26 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
         appBar: AppBar(
           title: const Text('Shopping List'),
         ),
-        floatingActionButton: _createNewListButton(context),
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _createNewListButton(context),
+            Padding(
+              padding: const EdgeInsets.only(right: 30),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditPdfPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.file_open, size: 28, color: Colors.white),
+              ),
+            )
+          ],
+        ),
         floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
         body: StreamBuilder<List<ShoppingListDto>>(
           stream: GetIt.instance<ShoppingListBloc>().shoppingListStream,
@@ -58,7 +78,7 @@ class _ShoppingListPageState extends State<ShoppingListPage> {
                 );
               } else {
                 return Padding(
-                  padding: const EdgeInsets.only(top:5, left: 25, right: 25),
+                  padding: const EdgeInsets.only(top: 5, left: 25, right: 25),
                   child: CustomScrollView(
                     physics: const NeverScrollableScrollPhysics(),
                     controller: _scrollController,
