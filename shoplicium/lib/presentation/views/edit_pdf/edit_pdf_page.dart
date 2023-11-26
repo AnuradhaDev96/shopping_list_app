@@ -48,7 +48,7 @@ class _EditPdfPageState extends State<EditPdfPage> {
     }
   }
 
-  void addAcceptedText() async {
+  Future<void> addAcceptedText() async {
     if (document != null) {
       const int pageIndex = 0;
       final PdfPage page = document!.pages[pageIndex];
@@ -64,6 +64,29 @@ class _EditPdfPageState extends State<EditPdfPage> {
         PdfStandardFont(PdfFontFamily.helvetica, 20),
         brush: PdfSolidBrush(PdfColor(237, 16, 16)),
         bounds: Rect.fromLTWH(pageSize.width - 200, page.size.height - 100, 200, 50),
+      );
+
+      var newBytes = await document!.save();
+
+      setState(() {
+        fileBytes = Uint8List.fromList(newBytes);
+        document = PdfDocument(inputBytes: newBytes);
+      });
+    }
+  }
+
+  Future<void> addSignature() async {
+    if (document != null) {
+      const int pageIndex = 0;
+      final PdfPage page = document!.pages[pageIndex];
+
+      var imageBytes = await _pdfFunctions.readDocumentData('assets/pdf/signature_sample.png');
+      final PdfBitmap image = PdfBitmap(Uint8List.fromList(imageBytes));
+
+      var pageSize = page.size;
+      page.graphics.drawImage(
+        image,
+        Rect.fromLTWH(pageSize.width - 220, page.size.height - 160, 200, 50),
       );
 
       var newBytes = await document!.save();
@@ -112,7 +135,9 @@ class _EditPdfPageState extends State<EditPdfPage> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              addSignature();
+            },
             child: const Text("Add Signature PNG", style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
