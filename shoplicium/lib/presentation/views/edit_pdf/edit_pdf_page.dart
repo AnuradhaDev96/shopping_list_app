@@ -8,6 +8,7 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../utils/constants/app_colors.dart';
+import 'exported_pdf_page.dart';
 
 class EditPdfPage extends StatefulWidget {
   const EditPdfPage({super.key});
@@ -23,17 +24,13 @@ class _EditPdfPageState extends State<EditPdfPage> {
 
   PdfDocument? document;
   Uint8List? fileBytes;
+  bool isDocumentEdited = false;
 
   @override
   void initState() {
     super.initState();
 
     _loadPdfBytes();
-
-    // var x = document!.
-
-    // _pdfController.importFormData(inputBytes, dataFormat)
-    // _readPDF();
   }
 
   Future<void> _loadPdfBytes() async {
@@ -71,6 +68,7 @@ class _EditPdfPageState extends State<EditPdfPage> {
       setState(() {
         fileBytes = Uint8List.fromList(newBytes);
         document = PdfDocument(inputBytes: newBytes);
+        isDocumentEdited = true;
       });
     }
   }
@@ -94,8 +92,28 @@ class _EditPdfPageState extends State<EditPdfPage> {
       setState(() {
         fileBytes = Uint8List.fromList(newBytes);
         document = PdfDocument(inputBytes: newBytes);
+        isDocumentEdited = true;
       });
     }
+  }
+
+  Future<void> exportAndViewPdf() async {
+    if (document != null) {
+      const String exportedPath = 'exported_pdf.pdf';
+      await _pdfFunctions.saveFileToEmptyFile(await document!.save(), exportedPath).then(
+            (value) => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const ExportedPdfPage(exportedFilePath: exportedPath)),
+        ),
+      );
+      // await File(exportedPath).writeAsBytes(await document!.save()).
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    document?.dispose();
   }
 
   @override
@@ -121,6 +139,15 @@ class _EditPdfPageState extends State<EditPdfPage> {
             color: Colors.white,
           ),
         ),
+        actions: [
+          if (isDocumentEdited)
+            IconButton(
+              onPressed: () {
+                exportAndViewPdf();
+              },
+              icon: const Icon(Icons.ios_share_rounded, color: Colors.white, size: 20),
+            )
+        ],
       ),
       // body: SfPdfViewer.asset('assets/pdf/Cover_letter.pdf',controller: _pdfController,),
       body: fileBytes == null
@@ -159,10 +186,20 @@ class PdfFunctions {
     return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   }
 
-  // Future<List<int>> getDocumentDataAsUIn8List(String fileName) async {
-  //   final ByteData data = await rootBundle.load(fileName);
-  //   return data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-  // }
+  Future<List<int>?> readBytesFromFilePath(String fileName) async {
+    //Get external storage directory
+    Directory directory = await getApplicationSupportDirectory();
+    //Get directory path
+    String path = directory.path;
+    //Create an empty file to write PDF data
+    File file = File('$path/$fileName');
+
+    if (await file.exists()) {
+      return await file.readAsBytes();
+    }
+
+    return null;
+  }
 
   // Read PDF and save data to local
   Future<void> readPDF(String fileName) async {
@@ -201,5 +238,16 @@ class PdfFunctions {
     await file.writeAsBytes(bytes, flush: true);
     //Open the PDF document in mobile
     OpenFile.open('$path/$fileName');
+  }
+
+  Future<void> saveFileToEmptyFile(List<int> bytes, String fileName) async {
+    //Get external storage directory
+    Directory directory = await getApplicationSupportDirectory();
+    //Get directory path
+    String path = directory.path;
+    //Create an empty file to write PDF data
+    File file = File('$path/$fileName');
+    //Write PDF data
+    await file.writeAsBytes(bytes, flush: true);
   }
 }
