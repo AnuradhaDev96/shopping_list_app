@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../utils/constants/app_colors.dart';
 import 'exported_pdf_page.dart';
@@ -18,13 +19,18 @@ class EditPdfPage extends StatefulWidget {
 }
 
 class _EditPdfPageState extends State<EditPdfPage> {
-  final _pdfController = PdfViewerController();
+  // final _pdfController = PdfViewerController();
   final PdfFunctions _pdfFunctions = PdfFunctions();
   final String assetFileName = 'assets/pdf/Cover_letter.pdf';
+
+  // final GlobalKey<SfPdfViewerState> _pdfViewerKey = GlobalKey();
 
   PdfDocument? document;
   Uint8List? fileBytes;
   bool isDocumentEdited = false;
+  UniqueKey pdfWidgetKey = UniqueKey();
+
+  final _fileBytesSubject = BehaviorSubject<Uint8List?>();
 
   @override
   void initState() {
@@ -40,6 +46,7 @@ class _EditPdfPageState extends State<EditPdfPage> {
         fileBytes = Uint8List.fromList(bytes);
         document = PdfDocument(inputBytes: bytes);
       });
+      _fileBytesSubject.sink.add(Uint8List.fromList(bytes));
     } catch (e) {
       print(e);
     }
@@ -69,7 +76,10 @@ class _EditPdfPageState extends State<EditPdfPage> {
         fileBytes = Uint8List.fromList(newBytes);
         document = PdfDocument(inputBytes: newBytes);
         isDocumentEdited = true;
+        pdfWidgetKey = UniqueKey();
       });
+      setState(() {});
+      _fileBytesSubject.sink.add(Uint8List.fromList(newBytes));
     }
   }
 
@@ -93,7 +103,10 @@ class _EditPdfPageState extends State<EditPdfPage> {
         fileBytes = Uint8List.fromList(newBytes);
         document = PdfDocument(inputBytes: newBytes);
         isDocumentEdited = true;
+        pdfWidgetKey = UniqueKey();
       });
+      setState(() {});
+      _fileBytesSubject.sink.add(Uint8List.fromList(newBytes));
     }
   }
 
@@ -102,10 +115,10 @@ class _EditPdfPageState extends State<EditPdfPage> {
       const String exportedPath = 'exported_pdf.pdf';
       await _pdfFunctions.saveFileToEmptyFile(await document!.save(), exportedPath).then(
             (value) => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ExportedPdfPage(exportedFilePath: exportedPath)),
-        ),
-      );
+              context,
+              MaterialPageRoute(builder: (context) => const ExportedPdfPage(exportedFilePath: exportedPath)),
+            ),
+          );
       // await File(exportedPath).writeAsBytes(await document!.save()).
     }
   }
@@ -150,12 +163,26 @@ class _EditPdfPageState extends State<EditPdfPage> {
         ],
       ),
       // body: SfPdfViewer.asset('assets/pdf/Cover_letter.pdf',controller: _pdfController,),
-      body: fileBytes == null
-          ? const Center(child: Text('Loading pdf data'))
-          : SfPdfViewer.memory(
-              fileBytes!,
-              controller: _pdfController,
-            ),
+      // body: fileBytes == null
+      //     ? const Center(child: Text('Loading pdf data'))
+      //     : PdfDataWidget(
+      //         key: pdfWidgetKey,
+      //         pdfData: fileBytes!,
+      //         // controller: _pdfController,
+      //       ),
+      body: StreamBuilder<Uint8List?>(
+        stream: _fileBytesSubject.stream,
+        builder: (context, snapshot) {
+          return snapshot.data == null
+              ? const Center(child: Text('Loading pdf data'))
+              : PDFView(
+            key: pdfWidgetKey,
+                  pdfData: snapshot.data!,
+                  // snapshot.data!,
+                  // controller: _pdfController,
+                );
+        },
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       floatingActionButton: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,5 +276,19 @@ class PdfFunctions {
     File file = File('$path/$fileName');
     //Write PDF data
     await file.writeAsBytes(bytes, flush: true);
+  }
+}
+
+class PdfDataWidget extends StatelessWidget {
+  const PdfDataWidget({super.key, required this.pdfData});
+
+  final Uint8List pdfData;
+
+  @override
+  Widget build(BuildContext context) {
+    return PDFView(
+      pdfData: pdfData,
+      // controller: _pdfController,
+    );
   }
 }
