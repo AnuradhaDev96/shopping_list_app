@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+// import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
 
 import '../../../utils/constants/app_colors.dart';
 import 'edit_pdf_page.dart';
@@ -15,7 +15,7 @@ class ExportedPdfPage extends StatefulWidget {
 }
 
 class _ExportedPdfPageState extends State<ExportedPdfPage> {
-  final _pdfController = PdfViewerController();
+  // final _pdfController = PdfViewerController();
   final PdfFunctions _pdfFunctions = PdfFunctions();
 
   PdfDocument? document;
@@ -72,12 +72,12 @@ class _ExportedPdfPageState extends State<ExportedPdfPage> {
           ),
         ),
       ),
-      body: fileBytes == null
-          ? const Center(child: Text('Loading pdf data'))
-          : SfPdfViewer.memory(
-        fileBytes!,
-        controller: _pdfController,
-      ),
+      // body: fileBytes == null
+      //     ? const Center(child: Text('Loading pdf data'))
+      //     : SfPdfViewer.memory(
+      //   fileBytes!,
+      //   // controller: _pdfController,
+      // ),
     );
   }
 }

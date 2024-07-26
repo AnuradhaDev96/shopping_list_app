@@ -229,30 +229,30 @@ class PdfFunctions {
   }
 
   // Read PDF and save data to local
-  Future<void> readPDF(String fileName) async {
-    //Load the PDF document
-    final PdfDocument document = PdfDocument(inputBytes: await readDocumentData(fileName));
-
-    //Get the pages count
-    int count = document.pages.count;
-
-    //Create the PDF standard font
-    PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 10);
-
-    for (int i = 1; i <= count; i++) {
-      //Draw text to the page
-      document.pages[i - 1].graphics
-          .drawString('Page $i of $count', font, bounds: const Rect.fromLTWH(20, 20, 0, 0), brush: PdfBrushes.red);
-    }
-
-    //Save the document.
-    List<int> bytes = await document.save();
-    // Dispose the document.
-    document.dispose();
-
-    //Save the file and launch/download.
-    saveAndLaunchFile(bytes, 'output.pdf');
-  }
+  // Future<void> readPDF(String fileName) async {
+  //   //Load the PDF document
+  //   final PdfDocument document = PdfDocument(inputBytes: await readDocumentData(fileName));
+  //
+  //   //Get the pages count
+  //   int count = document.pages.count;
+  //
+  //   //Create the PDF standard font
+  //   PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 10);
+  //
+  //   for (int i = 1; i <= count; i++) {
+  //     //Draw text to the page
+  //     document.pages[i - 1].graphics
+  //         .drawString('Page $i of $count', font, bounds: const Rect.fromLTWH(20, 20, 0, 0), brush: PdfBrushes.red);
+  //   }
+  //
+  //   //Save the document.
+  //   List<int> bytes = await document.save();
+  //   // Dispose the document.
+  //   document.dispose();
+  //
+  //   //Save the file and launch/download.
+  //   saveAndLaunchFile(bytes, 'output.pdf');
+  // }
 
   Future<void> saveAndLaunchFile(List<int> bytes, String fileName) async {
     //Get external storage directory
